@@ -66,6 +66,140 @@ body.dark {
   --slate-50: #0F180D;
 }
 
+/* ============================================
+   DARK MODE — Structural overrides
+   Targets all hardcoded Tailwind utility classes
+   ============================================ */
+
+/* App shell & backgrounds */
+.dark #app-container,
+.dark #login-gateway {
+  background-color: #060B05 !important;
+  color: #F0F5EF !important;
+}
+
+.dark .bg-white { background-color: #0F180D !important; }
+.dark .bg-slate-50 { background-color: #0F180D !important; }
+.dark .bg-slate-100 { background-color: #111A10 !important; }
+.dark .bg-slate-200 { background-color: #1A2518 !important; }
+.dark .bg-slate-800 { background-color: #F0F5EF !important; }
+.dark .bg-slate-900 { background-color: #F8FAF8 !important; }
+.dark .bg-slate-950 { background-color: #FFFFFF !important; }
+
+/* Text colors */
+.dark .text-slate-900 { color: #F0F5EF !important; }
+.dark .text-slate-800 { color: #E2EAE0 !important; }
+.dark .text-slate-700 { color: #C4D0C1 !important; }
+.dark .text-slate-600 { color: #A5B5A1 !important; }
+.dark .text-slate-500 { color: #879A83 !important; }
+.dark .text-slate-400 { color: #6B7E67 !important; }
+
+/* Borders */
+.dark .border-slate-100 { border-color: #1A2518 !important; }
+.dark .border-slate-200 { border-color: #2D3C2A !important; }
+.dark .border-slate-300 { border-color: #3A4E36 !important; }
+
+/* Sidebar */
+.dark #sidebar-container {
+  background-color: #0F180D !important;
+  border-color: #2D3C2A !important;
+}
+.dark #sidebar-container .bg-white\/40,
+.dark #sidebar-container [class*="bg-white"] {
+  background-color: rgba(15, 24, 13, 0.8) !important;
+}
+
+/* Right widgets panel */
+.dark #right-widgets-panel {
+  background-color: #0F180D !important;
+  border-color: #2D3C2A !important;
+}
+
+/* Main workspace area */
+.dark #main-workspace {
+  background-color: #111A10 !important;
+}
+
+/* Cards & surfaces */
+.dark .card-surface,
+.dark [class*="rounded-2xl"].bg-white,
+.dark [class*="rounded-3xl"].bg-white,
+.dark [class*="rounded-xl"].bg-white {
+  background-color: #0F180D !important;
+  border-color: #2D3C2A !important;
+}
+.dark .bg-slate-50.border,
+.dark .bg-slate-100.border {
+  background-color: #152213 !important;
+  border-color: #2D3C2A !important;
+}
+
+/* Table overrides */
+.dark table { background-color: #0F180D !important; }
+.dark thead { background-color: #0F180D !important; }
+.dark thead th {
+  background-color: #152213 !important;
+  color: #879A83 !important;
+  border-color: #2D3C2A !important;
+}
+.dark tbody tr {
+  background-color: #0F180D !important;
+  border-color: #1A2518 !important;
+}
+.dark tbody tr:hover {
+  background-color: #152213 !important;
+}
+.dark tbody td {
+  color: #E2EAE0 !important;
+  border-color: #1A2518 !important;
+}
+.dark .bg-white\/60 { background-color: rgba(15,24,13,0.6) !important; }
+
+/* Modals */
+.dark [id^="modal-"] > div,
+.dark .bg-white.rounded-3xl,
+.dark .bg-white.rounded-2xl {
+  background-color: #0F180D !important;
+  border-color: #2D3C2A !important;
+}
+.dark .bg-slate-50.border.border-slate-200.rounded-2xl {
+  background-color: #152213 !important;
+  border-color: #2D3C2A !important;
+}
+
+/* Badges / chips */
+.dark .bg-emerald-50 { background-color: rgba(45,106,36,0.15) !important; }
+.dark .bg-red-50 { background-color: rgba(127,29,29,0.2) !important; }
+.dark .bg-amber-50 { background-color: rgba(120,53,15,0.2) !important; }
+.dark .bg-blue-50 { background-color: rgba(23,37,84,0.2) !important; }
+.dark .bg-slate-100.text-slate-600 { background-color: #1A2518 !important; color: #A5B5A1 !important; }
+
+/* Login panel */
+.dark #login-form-panel {
+  background-color: #0F180D !important;
+}
+.dark #login-form-panel input {
+  background-color: #152213 !important;
+  border-color: #2D3C2A !important;
+  color: #E2EAE0 !important;
+}
+
+/* Navigation / header */
+.dark .bg-white.border-b,
+.dark header.bg-white {
+  background-color: #0F180D !important;
+  border-color: #2D3C2A !important;
+}
+
+/* Scrollbars in dark */
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(87, 112, 82, 0.4);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(87, 112, 82, 0.6);
+}
+
+
 body {
   background: var(--background) !important;
   color: var(--foreground) !important;
