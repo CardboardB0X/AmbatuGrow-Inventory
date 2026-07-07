@@ -1072,7 +1072,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Render main wrapper full-width
         DOM.mainWorkspace.innerHTML = `
-            <div class="flex flex-col min-h-0 space-y-6 animate-slide-up-fade">
+            <div class="flex flex-col min-h-0 space-y-6 animate-slide-up-fade h-full">
                 
                 <!-- Zone Filter Indicator Banner -->
                 ${selectedZoneFilter ? `
@@ -1141,7 +1141,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     <!-- Table Scroll Wrapper -->
-                    <div class="overflow-auto flex-1 max-h-[500px]">
+                    <div class="overflow-auto flex-1 min-h-0 max-h-[calc(100vh-260px)]">
                         <table class="w-full text-left border-collapse text-xs">
                             <thead>
                                 <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-500 uppercase tracking-widest select-none">
