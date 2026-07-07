@@ -143,36 +143,231 @@ document.addEventListener('DOMContentLoaded', () => {
         return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
 
-    // Helper: Appends log to console terminal
-    const addConsoleLog = (text, type = 'info') => {
-        const time = new Date().toLocaleTimeString('en-US', { hour12: false });
-        const log = document.createElement('div');
-        log.className = 'py-1 border-b border-slate-900/40 flex items-start gap-2 transition-all duration-300 animate-slide-up-fade text-[9px] leading-relaxed';
-        
-        let prefix = `<span class="text-slate-500 shrink-0 font-bold font-mono">[${time}]</span>`;
-        let icon = `<span class="text-slate-400 shrink-0 font-black font-mono">&gt;</span>`;
-        let contentClass = 'text-slate-300 font-medium break-all';
+    // Sidebar Widgets Stack Manager (Screenshot Match)
+    const updateSidebarWidgets = () => {
+        // 1. Low stock derivation
+        const items = [];
+        State.inventory_locations.forEach(loc => {
+            const prod = State.products.find(p => p.product_id === loc.product_id);
+            if (!prod) return;
+            items.push({
+                sku: prod.sku,
+                stockQty: loc.quantity,
+                minQty: prod.min_quantity_threshold,
+                maxQty: prod.max_quantity_threshold,
+                status: prod.status || 'Active'
+            });
+        });
 
-        if (type === 'success') {
-            icon = `<span class="text-emerald-400 shrink-0 font-black font-mono">✓</span>`;
-            contentClass = 'text-emerald-400 font-semibold';
-        } else if (type === 'error') {
-            icon = `<span class="text-rose-400 shrink-0 font-black font-mono">✗</span>`;
-            contentClass = 'text-rose-400 font-semibold';
-        } else if (type === 'warning') {
-            icon = `<span class="text-amber-400 shrink-0 font-black font-mono">⚠</span>`;
-            contentClass = 'text-amber-400 font-semibold';
+        const lowStockItems = items.filter(i => i.status === 'Active' && i.stockQty <= i.minQty);
+        const lowStockContainer = document.getElementById('sidebar-widget-low-stock');
+        
+        if (lowStockContainer) {
+            if (lowStockItems.length > 0) {
+                lowStockContainer.innerHTML = `
+                    <section class="bg-[#FEF7D0] border border-yellow-300 rounded-3xl p-5 shadow-2xs">
+                        <div class="flex items-start gap-3">
+                            <div class="p-1 text-[#b45309]">
+                                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 shrink-0"></i>
+                            </div>
+                            <div class="flex-1 min-w-0 text-slate-800">
+                                <h4 class="font-extrabold text-sm text-amber-900 leading-tight">Low Stock Warning</h4>
+                                <p class="text-[11px] font-bold text-amber-800 mt-1.5 leading-relaxed">
+                                    <strong>${lowStockItems.length} items</strong> below minimum threshold. Action required for replenishment.
+                                </p>
+                                <button id="sidebar-btn-generate-requisition" class="mt-3 px-3 py-2 bg-amber-700/10 hover:bg-amber-700/20 text-amber-955 rounded-xl text-[9px] font-black uppercase tracking-wider transition-colors border border-amber-600/20 cursor-pointer w-full text-center">
+                                    Generate Requisition Order
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                `;
+                
+                // Bind trigger
+                document.getElementById('sidebar-btn-generate-requisition').addEventListener('click', () => {
+                    let reqCount = 0;
+                    State.inventory_locations.forEach(loc => {
+                        const prod = State.products.find(p => p.product_id === loc.product_id);
+                        if (prod && loc.quantity <= prod.min_quantity_threshold && prod.status === 'Active') {
+                            const deficit = prod.max_quantity_threshold - loc.quantity;
+                            if (deficit > 0) {
+                                loc.quantity = prod.max_quantity_threshold;
+                                
+                                // Log Transaction
+                                const newTxId = State.stock_transactions.length + 1;
+                                State.stock_transactions.push({
+                                    transaction_id: newTxId,
+                                    product_id: prod.product_id,
+                                    warehouse_id: loc.warehouse_id,
+                                    zone_id: loc.zone_id,
+                                    type: 'IN',
+                                    quantity: deficit,
+                                    timestamp: new Date().toISOString(),
+                                    operator: 'System Scheduler',
+                                    notes: `Automatic reorder requisition safety threshold replenishment.`
+                                });
+                                
+                                addConsoleLog(`[Reorder SUCCESS] Replenished SKU ${prod.sku} with +${deficit.toFixed(0)} units to max threshold.`, 'success');
+                                reqCount++;
+                            }
+                        }
+                    });
+                    
+                    if (reqCount > 0) {
+                        showToast(`Generated requisition. Replenished ${reqCount} low stock items.`, 'success');
+                        playAlertSound('success');
+                        updateSidebarWidgets();
+                        if (State.activeTab === 'tracking') renderTracking();
+                    }
+                });
+            } else {
+                lowStockContainer.innerHTML = `
+                    <section class="bg-[#e6f4ea]/40 border border-emerald-200/50 rounded-3xl p-5 shadow-2xs">
+                        <div class="flex items-start gap-3">
+                            <div class="p-1 text-[#137333]">
+                                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
+                            </div>
+                            <div class="flex-1 min-w-0 text-slate-800">
+                                <h4 class="font-extrabold text-sm text-emerald-950 leading-tight font-outfit">All Stocks Secure</h4>
+                                <p class="text-[11px] font-bold text-emerald-800 mt-1 leading-relaxed">No items are currently below safety thresholds.</p>
+                            </div>
+                        </div>
+                    </section>
+                `;
+            }
         }
 
-        // Highlight tags enclosed in brackets e.g. [Product REGISTERED] or [PO DISPATCHED]
-        let formattedText = text.replace(/\[([^\]]+)\]/g, '<span class="bg-slate-900/80 px-1 py-0.5 rounded text-[8px] font-black uppercase tracking-wider text-slate-300 border border-slate-800">$1</span>');
+        // 2. Zone densities
+        const zonesList = document.getElementById('sidebar-zones-list');
+        if (zonesList) {
+            zonesList.innerHTML = '';
+            State.warehouse_zones.forEach(zone => {
+                let zoneSum = 0;
+                State.inventory_locations.forEach(loc => {
+                    if (loc.zone_id === zone.zone_id) {
+                        zoneSum += parseFloat(loc.quantity);
+                    }
+                });
+                const zoneMax = zone.zone_id === 3 ? 500 : 150;
+                const pct = Math.min(100, Math.round((zoneSum / zoneMax) * 100));
+                
+                let color = 'bg-[#2D6A24]'; // green
+                if (zone.zone_id === 2) color = 'bg-[#34a853]'; // lighter green
+                else if (zone.zone_id === 3) color = 'bg-[#fbbc05]'; // orange/yellow
 
-        // Highlight SKUs like AGRI-SEED-042
-        formattedText = formattedText.replace(/(AGRI-[A-Z0-9-]+)/g, '<span class="font-mono text-cyan-400 font-bold bg-cyan-950/20 px-1 border border-cyan-800/20 rounded">$1</span>');
+                const wh = State.warehouses.find(w => w.warehouse_id === zone.warehouse_id);
+                const whLetter = wh ? (wh.warehouse_id === 1 ? 'A' : wh.warehouse_id === 2 ? 'B' : 'C') : 'A';
+                const cleanName = `Warehouse ${whLetter} - Zone ${zone.zone_id}`;
 
-        log.innerHTML = `${prefix} ${icon} <div class="${contentClass} flex-1">${formattedText}</div>`;
-        DOM.consoleLogs.appendChild(log);
-        DOM.consoleLogs.scrollTop = DOM.consoleLogs.scrollHeight;
+                const zoneCard = document.createElement('div');
+                zoneCard.className = `p-2.5 rounded-2xl border border-transparent cursor-pointer transition-all hover:bg-slate-50 ${selectedZoneFilter === zone.zone_name ? 'bg-emerald-50/50 border-emerald-200' : ''}`;
+                zoneCard.innerHTML = `
+                    <div class="flex justify-between items-baseline mb-1">
+                        <span class="text-xs font-bold text-slate-700">${cleanName}</span>
+                        <span class="text-[11px] font-extrabold text-slate-900 tabular-nums">${zoneSum.toFixed(0)} items</span>
+                    </div>
+                    <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/10">
+                        <div class="h-full rounded-full transition-all duration-300 ${color}" style="width: ${pct}%"></div>
+                    </div>
+                `;
+                zoneCard.addEventListener('click', () => {
+                    selectedZoneFilter = selectedZoneFilter === zone.zone_name ? null : zone.zone_name;
+                    updateSidebarWidgets();
+                    if (State.activeTab === 'tracking') renderTracking();
+                });
+                zonesList.appendChild(zoneCard);
+            });
+        }
+
+        // 3. Recent logs
+        const logsList = document.getElementById('sidebar-logs-list');
+        if (logsList) {
+            logsList.innerHTML = '';
+            
+            const sortedTxs = [...State.stock_transactions]
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 3);
+                
+            const getRelativeTime = (timestamp) => {
+                if (!timestamp) return 'Just now';
+                const diff = Date.now() - new Date(timestamp).getTime();
+                const mins = Math.floor(diff / 60000);
+                if (mins < 1) return 'Just now';
+                if (mins < 60) return `${mins} min${mins > 1 ? 's' : ''} ago`;
+                const hours = Math.floor(mins / 60);
+                if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+                const days = Math.floor(hours / 24);
+                return `${days} day${days > 1 ? 's' : ''} ago`;
+            };
+
+            sortedTxs.forEach(tx => {
+                const prod = State.products.find(p => p.product_id === tx.product_id);
+                
+                let iconElement = '<i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>';
+                let iconBgClass = 'bg-[#e6f4ea] text-[#137333]'; // Stock-In green
+                let messageTitle = `Stock-In +${tx.quantity.toFixed(0)}`;
+
+                if (tx.type === 'OUT') {
+                    iconElement = '<i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>';
+                    iconBgClass = 'bg-[#fef7e0] text-[#b06000]'; // Stock-Out orange
+                    messageTitle = `Stock-Out -${tx.quantity.toFixed(0)}`;
+                } else if (tx.notes && tx.notes.includes('relocation')) {
+                    iconElement = '<i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>';
+                    iconBgClass = 'bg-[#e8f0fe] text-[#1a73e8]'; // Transfer blue
+                    messageTitle = 'Relocated Batch';
+                } else if (tx.notes && tx.notes.includes('Update')) {
+                    iconElement = '<i data-lucide="edit-3" class="w-3.5 h-3.5"></i>';
+                    iconBgClass = 'bg-[#e8f0fe] text-[#1a73e8]'; // Edit blue
+                    messageTitle = 'Updated Details';
+                }
+
+                const logItem = document.createElement('div');
+                logItem.className = 'flex gap-3 text-xs leading-relaxed';
+                logItem.innerHTML = `
+                    <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${iconBgClass}">
+                        ${iconElement}
+                    </div>
+
+                    <div class="flex-1 min-w-0">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-slate-800">${messageTitle}</span>
+                            <span class="text-[10px] text-slate-400 font-semibold mt-0.5">
+                                SKU: <button data-sku="${prod ? prod.sku : ''}" class="sidebar-btn-log-sku text-[#2d6a24] hover:underline font-bold bg-transparent border-none cursor-pointer p-0 font-mono">${prod ? prod.sku : 'N/A'}</button>
+                            </span>
+                            <span class="text-[9px] text-slate-400 font-semibold mt-0.5 font-sans">
+                                ${getRelativeTime(tx.timestamp)} by ${tx.operator || 'Admin'}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                
+                const btnSku = logItem.querySelector('.sidebar-btn-log-sku');
+                if (btnSku) {
+                    btnSku.addEventListener('click', () => {
+                        const sku = btnSku.getAttribute('data-sku');
+                        if (sku) {
+                            if (State.activeTab !== 'tracking') {
+                                DOM.sidebarNav.querySelector('[data-tab="tracking"]').click();
+                            }
+                            // Reset filters
+                            selectedCategoryFilter = 'All';
+                            selectedStatusFilter = 'All';
+                            selectedZoneFilter = null;
+                            DOM.globalSearch.value = sku;
+                            DOM.globalSearch.dispatchEvent(new Event('input'));
+                        }
+                    });
+                }
+
+                logsList.appendChild(logItem);
+            });
+        }
+        
+        lucide.createIcons();
+    };
+
+    const addConsoleLog = (text, type = 'info') => {
+        updateSidebarWidgets();
     };
 
     // Helper: Show toast notification
@@ -332,13 +527,21 @@ document.addEventListener('DOMContentLoaded', () => {
                             // Initialize modules layout
                             renderWorkspace();
                             showToast(`Welcome back, ${State.currentUser.name}.`, 'success');
-                            addConsoleLog(`Session authenticated. Access level: ${State.currentUser.role_id === 1 ? 'ADMIN' : 'OFFICER'}.`, 'success');
                         }, 500);
                     }, 500);
                 }
             }, step.delay);
         });
     });
+
+    // Sidebar Logs "View All" Button Listener
+    const btnSidebarViewAll = document.getElementById('sidebar-btn-view-all-logs');
+    if (btnSidebarViewAll) {
+        btnSidebarViewAll.addEventListener('click', () => {
+            const ledgerBtn = DOM.sidebarNav.querySelector('button[data-tab="ledger"]');
+            if (ledgerBtn) ledgerBtn.click();
+        });
+    }
 
     // ------------------------------------------
     // 4. RENDERING VIEWS & TAB SWITCHING
@@ -368,6 +571,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // DYNAMIC VIEWS GENERATORS
     const renderWorkspace = () => {
         if (!State.isAuthenticated) return;
+        updateSidebarWidgets();
         
         if (State.activeTab === 'dashboard') {
             renderDashboard();

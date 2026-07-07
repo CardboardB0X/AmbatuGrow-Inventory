@@ -410,22 +410,35 @@
                 </main>
 
                 <!-- RIGHT-SIDE LOG TERMINAL (Column 3) -->
-                <aside class="w-80 bg-slate-200/50 border-l border-slate-200 flex flex-col justify-between shrink-0 min-h-0 overflow-hidden" id="widget-sidebar">
-                    <!-- Console Log Module -->
-                    <div class="flex-1 flex flex-col min-h-0 p-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-slate-200 shrink-0">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="terminal" class="w-4 h-4 text-emerald-600"></i>
-                                <span class="text-[10px] font-black uppercase tracking-wider text-slate-700">Real-Time Ledger Logs</span>
-                            </div>
-                            <span class="text-[8px] px-1.5 py-0.5 bg-emerald-100 text-emerald-800 rounded font-black uppercase tracking-widest" id="sim-speed-badge">Realtime</span>
+                <aside class="w-80 border-l border-slate-200 bg-white p-6 flex flex-col gap-6 overflow-y-auto select-none shrink-0 min-h-0" id="widget-sidebar">
+                    
+                    <!-- Widget 1: Low Stock Warning Container -->
+                    <div id="sidebar-widget-low-stock"></div>
+
+                    <!-- Widget 2: Zone Density (Screenshot Progress Bars) -->
+                    <div class="space-y-4" id="sidebar-widget-zone-density">
+                        <div class="flex items-center gap-2 text-slate-800">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-700 shrink-0"></i>
+                            <h4 class="font-extrabold text-sm">Zone Density</h4>
                         </div>
-                        <!-- Terminal logs block -->
-                        <div class="flex-1 min-h-0 overflow-y-auto font-mono text-[10px] text-emerald-400 bg-slate-950/95 p-3.5 rounded-2xl border border-slate-800/80 shadow-inner mt-4 space-y-2 select-text" id="console-logs">
-                            <!-- Injected by background activity simulation -->
-                            <div class="text-slate-400">[00:00:00] Terminal Initialized successfully.</div>
-                            <div class="text-slate-400">[00:00:01] Mock databases loaded: 6 categories, 15 products.</div>
-                            <div class="text-slate-400">[00:00:02] Simulation loop triggered. Waiting for events...</div>
+                        <div class="space-y-3.5" id="sidebar-zones-list">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Widget 3: Recent Logs timeline -->
+                    <div class="flex-1 flex flex-col min-h-0 space-y-4" id="sidebar-widget-recent-logs">
+                        <div class="flex justify-between items-center text-slate-800 shrink-0">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="clock" class="w-4 h-4 text-emerald-700 shrink-0"></i>
+                                <h4 class="font-extrabold text-sm">Recent Logs</h4>
+                            </div>
+                            <button id="sidebar-btn-view-all-logs" class="text-[10px] font-black uppercase tracking-wider text-emerald-700 hover:text-emerald-950 hover:underline cursor-pointer bg-transparent border-none">
+                                View All
+                            </button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto pr-1 space-y-4" id="sidebar-logs-list">
+                            <!-- Injected dynamically -->
                         </div>
                     </div>
 
