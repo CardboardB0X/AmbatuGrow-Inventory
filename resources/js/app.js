@@ -115,9 +115,9 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Warehouses Table
         warehouses: [
-            { warehouse_id: 1, name: 'Indang Hub (CvSU)', address_id: 1, capacity_sqm: 500.00 },
-            { warehouse_id: 2, name: 'Dasma Warehouse', address_id: 2, capacity_sqm: 1200.00 },
-            { warehouse_id: 3, name: 'Silang Node', address_id: 3, capacity_sqm: 800.00 }
+            { warehouse_id: 1, name: 'Indang Hub (CvSU)', address_id: 1, capacity_sqm: 5000.00 },
+            { warehouse_id: 2, name: 'Dasma Warehouse', address_id: 2, capacity_sqm: 12000.00 },
+            { warehouse_id: 3, name: 'Silang Node', address_id: 3, capacity_sqm: 8000.00 }
         ],
         
         // Warehouse Zones Table
@@ -356,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         zoneSum += parseFloat(loc.quantity);
                     }
                 });
-                const zoneMax = zone.zone_id === 3 ? 500 : 150;
+                const zoneMax = zone.zone_id === 3 ? 5000 : 1500;
                 const pct = Math.min(100, Math.round((zoneSum / zoneMax) * 100));
                 
                 let color = 'bg-[#2D6A24]'; // green
@@ -874,7 +874,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             
             // Assume dummy zone capacity is 150 for CV/dry storage, 400 for bulk
-            const zoneMax = zone.zone_id === 3 ? 500 : 150;
+            const zoneMax = zone.zone_id === 3 ? 5000 : 1500;
             const pct = Math.min(100, Math.round((zoneSum / zoneMax) * 100));
 
             const meter = document.createElement('div');
@@ -1626,7 +1626,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
-                const zoneMax = zone.zone_id === 3 ? 500 : 150;
+                const zoneMax = zone.zone_id === 3 ? 5000 : 1500;
                 const pct = Math.min(100, Math.round((zoneSum / zoneMax) * 100));
 
                 const zoneItem = document.createElement('div');
@@ -1803,7 +1803,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                     
-                    const zoneMax = zone.zone_id === 3 ? 500 : 150;
+                    const zoneMax = zone.zone_id === 3 ? 5000 : 1500;
                     labels.push(`${wh.name.split(' ')[0]} - ${zone.zone_name}`);
                     occupancies.push(parseFloat(zoneSum.toFixed(1)));
                     limits.push(zoneMax);
