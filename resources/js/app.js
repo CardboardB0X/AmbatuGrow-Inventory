@@ -962,181 +962,110 @@ document.addEventListener('DOMContentLoaded', () => {
             return code.charAt(0).toUpperCase() + code.slice(1);
         };
 
-        // Render main wrapper splitting Left Table and Right Widgets
+        // Render main wrapper full-width
         DOM.mainWorkspace.innerHTML = `
-            <div class="flex flex-col lg:flex-row gap-6 animate-slide-up-fade h-full min-h-0 select-none">
+            <div class="flex flex-col min-h-0 space-y-6 animate-slide-up-fade">
                 
-                <!-- LEFT COLUMN: Filters and Table -->
-                <div class="flex-1 flex flex-col min-h-0 space-y-6">
-                    
-                    <!-- Zone Filter Indicator Banner -->
-                    ${selectedZoneFilter ? `
-                    <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl px-4 py-2 flex items-center justify-between text-xs text-emerald-800 font-bold shrink-0">
-                        <span>Active Zone Filter: <strong>${selectedZoneFilter}</strong></span>
-                        <button id="btn-clear-zone-filter" class="text-emerald-700 hover:text-red-700 font-extrabold cursor-pointer bg-transparent border-none">
-                            Clear Filter &times;
-                        </button>
-                    </div>
-                    ` : ''}
+                <!-- Zone Filter Indicator Banner -->
+                ${selectedZoneFilter ? `
+                <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl px-4 py-2 flex items-center justify-between text-xs text-emerald-800 font-bold shrink-0">
+                    <span>Active Zone Filter: <strong>${selectedZoneFilter}</strong></span>
+                    <button id="btn-clear-zone-filter" class="text-emerald-700 hover:text-red-700 font-extrabold cursor-pointer bg-transparent border-none">
+                        Clear Filter &times;
+                    </button>
+                </div>
+                ` : ''}
 
-                    <!-- Filter and Top Actions Header (Screenshot Match) -->
-                    <div class="bg-white border border-slate-200 p-5 rounded-3xl flex items-center justify-between gap-4 shrink-0 shadow-2xs">
-                        <!-- Left Side: Add Button -->
-                        ${State.currentUser.role_id === 1 ? `
-                        <button id="btn-add-product" class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2D6A24] hover:bg-[#23531B] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer border-none font-outfit">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                            <span>Add New Inventory Item</span>
-                        </button>
-                        ` : `<div></div>`}
+                <!-- Filter and Top Actions Header (Screenshot Match) -->
+                <div class="bg-white border border-slate-200 p-5 rounded-3xl flex items-center justify-between gap-4 shrink-0 shadow-2xs">
+                    <!-- Left Side: Add Button -->
+                    ${State.currentUser.role_id === 1 ? `
+                    <button id="btn-add-product" class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2D6A24] hover:bg-[#23531B] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer border-none font-outfit">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        <span>Add New Inventory Item</span>
+                    </button>
+                    ` : `<div></div>`}
 
-                        <!-- Right Side: Category and Status Dropdowns -->
-                        <div class="flex items-center gap-4">
-                            <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Category</span>
-                                <select id="filter-category" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
-                                    ${catOptionsHTML}
-                                </select>
-                            </div>
+                    <!-- Right Side: Category and Status Dropdowns -->
+                    <div class="flex items-center gap-4">
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Category</span>
+                            <select id="filter-category" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
+                                ${catOptionsHTML}
+                            </select>
+                        </div>
 
-                            <div class="flex flex-col gap-1">
-                                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Status</span>
-                                <select id="filter-status" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
-                                    <option value="All" ${selectedStatusFilter === 'All' ? 'selected' : ''}>All Statuses</option>
-                                    <option value="Active" ${selectedStatusFilter === 'Active' ? 'selected' : ''}>Active</option>
-                                    <option value="Obsolete" ${selectedStatusFilter === 'Obsolete' ? 'selected' : ''}>Obsolete</option>
-                                </select>
-                            </div>
+                        <div class="flex flex-col gap-1">
+                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Status</span>
+                            <select id="filter-status" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
+                                <option value="All" ${selectedStatusFilter === 'All' ? 'selected' : ''}>All Statuses</option>
+                                <option value="Active" ${selectedStatusFilter === 'Active' ? 'selected' : ''}>Active</option>
+                                <option value="Obsolete" ${selectedStatusFilter === 'Obsolete' ? 'selected' : ''}>Obsolete</option>
+                            </select>
                         </div>
                     </div>
-
-                    <!-- Bulk Action Panel -->
-                    ${selectedSkus.length > 0 ? `
-                    <div class="bg-emerald-950 text-white rounded-2xl px-5 py-3 flex items-center justify-between text-xs shadow-md border border-emerald-900 animate-slide-up-fade shrink-0">
-                        <span class="font-bold font-outfit">${selectedSkus.length} items selected</span>
-                        <div class="flex items-center gap-3">
-                            <button id="btn-bulk-active" class="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Active</button>
-                            <button id="btn-bulk-obsolete" class="px-3 py-1.5 bg-amber-800 hover:bg-amber-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Obsolete</button>
-                            ${State.currentUser.role_id === 1 ? `
-                            <button id="btn-bulk-delete" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Delete</button>
-                            ` : ''}
-                            <button id="btn-bulk-cancel" class="text-emerald-400 hover:text-emerald-300 font-bold cursor-pointer bg-transparent border-none">Cancel</button>
-                        </div>
-                    </div>
-                    ` : ''}
-
-                    <!-- Master Inventory Tracking Card -->
-                    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col flex-1">
-                        <!-- Table Title Header -->
-                        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
-                            <h3 class="font-black text-sm text-slate-800 font-outfit">Master Inventory Tracking</h3>
-                            <button id="btn-export-csv" class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#2D6A24] hover:text-[#23531B] transition-colors cursor-pointer bg-transparent border-none">
-                                <span>Export CSV</span>
-                                <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                            </button>
-                        </div>
-
-                        <!-- Table Scroll Wrapper -->
-                        <div class="overflow-auto flex-1 max-h-[500px]">
-                            <table class="w-full text-left border-collapse text-xs">
-                                <thead>
-                                    <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-500 uppercase tracking-widest select-none">
-                                        <th class="p-4 w-12 text-center">
-                                            <input type="checkbox" id="check-all-skus" ${isAllSelected ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4" />
-                                        </th>
-                                        <th class="p-4">SKU</th>
-                                        <th class="p-4">Item Name</th>
-                                        <th class="p-4">Description</th>
-                                        <th class="p-4">Category</th>
-                                        <th class="p-4">Shelf No.</th>
-                                        <th class="p-4 text-right">Stock Qty</th>
-                                        <th class="p-4">UoM</th>
-                                        <th class="p-4 text-center">Status</th>
-                                        <th class="p-4 text-center">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="stock-tbody" class="divide-y divide-slate-100 text-slate-600">
-                                    <!-- Rows injected dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Total counts footer -->
-                        <div class="bg-slate-50 border-t border-slate-100 px-6 py-3.5 flex items-center justify-between text-[10px] text-slate-500 font-black select-none shrink-0">
-                            <span>Showing ${filteredItems.length} of ${items.length} items</span>
-                            <div class="flex gap-4">
-                                <span>Active: ${items.filter(i => i.status === 'Active').length}</span>
-                                <span>Obsolete: ${items.filter(i => i.status === 'Obsolete').length}</span>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- RIGHT COLUMN: Widgets Stack -->
-                <aside class="w-full lg:w-80 flex flex-col gap-6 shrink-0">
-                    
-                    <!-- WIDGET 1: Low Stock Warning Urgent Alert -->
-                    ${lowStockItems.length > 0 ? `
-                    <section class="bg-[#FEF7D0] border border-yellow-300 rounded-3xl p-5 shadow-2xs">
-                        <div class="flex items-start gap-3">
-                            <div class="p-1 text-[#b45309]">
-                                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 shrink-0"></i>
-                            </div>
-                            <div class="flex-1 min-w-0 text-slate-800">
-                                <h4 class="font-extrabold text-sm text-amber-900 leading-tight">Low Stock Warning</h4>
-                                <p class="text-[11px] font-bold text-amber-800 mt-1.5 leading-relaxed">
-                                    <strong>${lowStockItems.length} items</strong> below minimum threshold. Action required for replenishment.
-                                </p>
-                                <button id="btn-generate-requisition" class="mt-3 px-3 py-1.5 bg-amber-700/10 hover:bg-amber-700/20 text-amber-955 rounded-xl text-[9px] font-black uppercase tracking-wider transition-colors border border-amber-600/20 cursor-pointer w-full text-center">
-                                    Generate Requisition Order
-                                </button>
-                            </div>
-                        </div>
-                    </section>
-                    ` : `
-                    <section class="bg-[#e6f4ea]/40 border border-emerald-200/50 rounded-3xl p-5 shadow-2xs">
-                        <div class="flex items-start gap-3">
-                            <div class="p-1 text-[#137333]">
-                                <i data-lucide="shield-check" class="w-5 h-5 text-emerald-600 shrink-0"></i>
-                            </div>
-                            <div class="flex-1 min-w-0 text-slate-800">
-                                <h4 class="font-extrabold text-sm text-emerald-900 leading-tight">All Stocks Secure</h4>
-                                <p class="text-[11px] font-bold text-emerald-800 mt-1.5 leading-relaxed">No items are currently below safety thresholds.</p>
-                            </div>
-                        </div>
-                    </section>
-                    `}
+                <!-- Bulk Action Panel -->
+                ${selectedSkus.length > 0 ? `
+                <div class="bg-emerald-950 text-white rounded-2xl px-5 py-3 flex items-center justify-between text-xs shadow-md border border-emerald-900 animate-slide-up-fade shrink-0">
+                    <span class="font-bold font-outfit">${selectedSkus.length} items selected</span>
+                    <div class="flex items-center gap-3">
+                        <button id="btn-bulk-active" class="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Active</button>
+                        <button id="btn-bulk-obsolete" class="px-3 py-1.5 bg-amber-800 hover:bg-amber-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Obsolete</button>
+                        ${State.currentUser.role_id === 1 ? `
+                        <button id="btn-bulk-delete" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Delete</button>
+                        ` : ''}
+                        <button id="btn-bulk-cancel" class="text-emerald-400 hover:text-emerald-300 font-bold cursor-pointer bg-transparent border-none">Cancel</button>
+                    </div>
+                </div>
+                ` : ''}
 
-                    <!-- WIDGET 2: Zone Density (Progress Bars) -->
-                    <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-2xs space-y-4">
-                        <div class="flex items-center gap-2 text-slate-800">
-                            <i data-lucide="map-pin" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                            <h4 class="font-black text-xs uppercase tracking-wider text-slate-700">Zone Density</h4>
-                        </div>
+                <!-- Master Inventory Tracking Card -->
+                <div class="bg-white rounded-3xl border border-slate-200 shadow-2xs overflow-hidden flex flex-col flex-1">
+                    <!-- Table Title Header -->
+                    <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
+                        <h3 class="font-black text-sm text-slate-800 font-outfit">Master Inventory Tracking</h3>
+                        <button id="btn-export-csv" class="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#2D6A24] hover:text-[#23531B] transition-colors cursor-pointer bg-transparent border-none">
+                            <span>Export CSV</span>
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
 
-                        <div class="space-y-3.5" id="widget-zones-container">
-                            <!-- Injected below -->
-                        </div>
-                    </section>
+                    <!-- Table Scroll Wrapper -->
+                    <div class="overflow-auto flex-1 max-h-[500px]">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-500 uppercase tracking-widest select-none">
+                                    <th class="p-4 w-12 text-center">
+                                        <input type="checkbox" id="check-all-skus" ${isAllSelected ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4" />
+                                    </th>
+                                    <th class="p-4">SKU</th>
+                                    <th class="p-4">Item Name</th>
+                                    <th class="p-4">Description</th>
+                                    <th class="p-4">Category</th>
+                                    <th class="p-4">Shelf No.</th>
+                                    <th class="p-4 text-right">Stock Qty</th>
+                                    <th class="p-4">UoM</th>
+                                    <th class="p-4 text-center">Status</th>
+                                    <th class="p-4 text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stock-tbody" class="divide-y divide-slate-100 text-slate-600">
+                                <!-- Rows injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
 
-                    <!-- WIDGET 3: Recent Logs timeline -->
-                    <section class="bg-white border border-slate-200 rounded-3xl p-5 shadow-2xs flex-1 flex flex-col min-h-0 space-y-4">
-                        <div class="flex justify-between items-center text-slate-800">
-                            <div class="flex items-center gap-2">
-                                <i data-lucide="clock" class="w-4 h-4 text-emerald-700 shrink-0"></i>
-                                <h4 class="font-black text-xs uppercase tracking-wider text-slate-700">Recent Logs</h4>
-                            </div>
-                            <button id="btn-logs-view-all" class="text-[10px] font-black uppercase tracking-wider text-emerald-700 hover:text-emerald-900 hover:underline cursor-pointer bg-transparent border-none">
-                                View All
-                            </button>
+                    <!-- Total counts footer -->
+                    <div class="bg-slate-50 border-t border-slate-100 px-6 py-3.5 flex items-center justify-between text-[10px] text-slate-500 font-black select-none shrink-0">
+                        <span>Showing ${filteredItems.length} of ${items.length} items</span>
+                        <div class="flex gap-4">
+                            <span>Active: ${items.filter(i => i.status === 'Active').length}</span>
+                            <span>Obsolete: ${items.filter(i => i.status === 'Obsolete').length}</span>
                         </div>
-
-                        <div class="flex-1 overflow-y-auto pr-1 space-y-4" id="widget-logs-container">
-                            <!-- Injected below -->
-                        </div>
-                    </section>
-
-                </aside>
+                    </div>
+                </div>
 
             </div>
         `;
@@ -1212,108 +1141,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
 
-        // Inject Zone Density Progress Bars
-        const zonesContainer = document.getElementById('widget-zones-container');
-        State.warehouse_zones.forEach(zone => {
-            let zoneSum = 0;
-            State.inventory_locations.forEach(loc => {
-                if (loc.zone_id === zone.zone_id) {
-                    zoneSum += parseFloat(loc.quantity);
-                }
-            });
-            const zoneMax = zone.zone_id === 3 ? 500 : 150;
-            const pct = Math.min(100, Math.round((zoneSum / zoneMax) * 100));
-            
-            let color = 'bg-[#2D6A24]'; // green
-            if (zone.zone_id === 2) color = 'bg-[#34a853]'; // lighter green
-            else if (zone.zone_id === 3) color = 'bg-[#fbbc05]'; // orange/yellow
-
-            const wh = State.warehouses.find(w => w.warehouse_id === zone.warehouse_id);
-            const whLetter = wh ? (wh.warehouse_id === 1 ? 'A' : wh.warehouse_id === 2 ? 'B' : 'C') : 'A';
-            const cleanName = `Warehouse ${whLetter} - Zone ${zone.zone_id}`;
-
-            const zoneCard = document.createElement('div');
-            zoneCard.className = `p-2 rounded-xl border border-transparent cursor-pointer transition-all hover:bg-slate-50 ${selectedZoneFilter === zone.zone_name ? 'bg-emerald-50/50 border-emerald-200' : ''}`;
-            zoneCard.innerHTML = `
-                <div class="flex justify-between items-baseline mb-1">
-                    <span class="text-xs font-bold text-slate-700">${cleanName}</span>
-                    <span class="text-[11px] font-extrabold text-slate-900 tabular-nums">${zoneSum.toFixed(0)} items</span>
-                </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden border border-slate-200/10">
-                    <div class="h-full rounded-full transition-all duration-300 ${color}" style="width: ${pct}%"></div>
-                </div>
-            `;
-            zoneCard.addEventListener('click', () => {
-                selectedZoneFilter = selectedZoneFilter === zone.zone_name ? null : zone.zone_name;
-                renderTracking();
-            });
-            zonesContainer.appendChild(zoneCard);
-        });
-
-        // Inject Recent Logs Timeline
-        const logsContainer = document.getElementById('widget-logs-container');
-        sortedTxs.forEach(tx => {
-            const prod = State.products.find(p => p.product_id === tx.product_id);
-            
-            let iconElement = '<i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>';
-            let iconBgClass = 'bg-[#e6f4ea] text-[#137333]'; // Stock-In green
-            let messageTitle = `Stock-In +${tx.quantity}`;
-
-            if (tx.type === 'OUT') {
-                iconElement = '<i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>';
-                iconBgClass = 'bg-[#fef7e0] text-[#b06000]'; // Stock-Out orange
-                messageTitle = `Stock-Out -${tx.quantity}`;
-            } else if (tx.notes && tx.notes.includes('relocation')) {
-                iconElement = '<i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>';
-                iconBgClass = 'bg-[#e8f0fe] text-[#1a73e8]'; // Transfer blue
-                messageTitle = 'Relocated Batch';
-            } else if (tx.notes && tx.notes.includes('Update')) {
-                iconElement = '<i data-lucide="edit-3" class="w-3.5 h-3.5"></i>';
-                iconBgClass = 'bg-[#e8f0fe] text-[#1a73e8]'; // Edit blue
-                messageTitle = 'Updated Details';
-            }
-
-            const logItem = document.createElement('div');
-            logItem.className = 'flex gap-3 text-xs leading-relaxed';
-            logItem.innerHTML = `
-                <!-- Circular Icon block -->
-                <div class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${iconBgClass}">
-                    ${iconElement}
-                </div>
-
-                <div class="flex-1 min-w-0">
-                    <div class="flex flex-col">
-                        <!-- Log Text -->
-                        <span class="font-bold text-slate-800">${messageTitle}</span>
-                        
-                        <!-- Details and relative times -->
-                        <span class="text-[10px] text-slate-400 font-semibold mt-0.5">
-                            SKU: <button data-sku="${prod ? prod.sku : ''}" class="btn-log-sku text-emerald-700 hover:underline font-bold bg-transparent border-none cursor-pointer p-0">${prod ? prod.sku : 'N/A'}</button>
-                        </span>
-
-                        <span class="text-[9px] text-slate-400 font-semibold mt-0.5">
-                            ${getRelativeTime(tx.timestamp)} by ${tx.operator || 'Admin'}
-                        </span>
-                    </div>
-                </div>
-            `;
-            
-            // Click to search SKU
-            const btnSku = logItem.querySelector('.btn-log-sku');
-            if (btnSku) {
-                btnSku.addEventListener('click', () => {
-                    const sku = btnSku.getAttribute('data-sku');
-                    if (sku) {
-                        DOM.globalSearch.value = sku;
-                        DOM.globalSearch.dispatchEvent(new Event('input'));
-                    }
-                });
-            }
-
-            logsContainer.appendChild(logItem);
-        });
-
-        // Initialize icons inside the table & sidebar
+        // Initialize icons inside the table
         lucide.createIcons();
 
         // EVENT LISTENERS & TRIGGERS
@@ -1480,56 +1308,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btnBulkCancel.addEventListener('click', () => {
                 selectedSkus = [];
                 renderTracking();
-            });
-        }
-
-        // Urgent Alert Button Handler
-        const btnReq = document.getElementById('btn-generate-requisition');
-        if (btnReq) {
-            btnReq.addEventListener('click', () => {
-                let reqCount = 0;
-                State.inventory_locations.forEach(loc => {
-                    const prod = State.products.find(p => p.product_id === loc.product_id);
-                    if (prod && loc.quantity <= prod.min_quantity_threshold && prod.status === 'Active') {
-                        const deficit = prod.max_quantity_threshold - loc.quantity;
-                        if (deficit > 0) {
-                            loc.quantity = prod.max_quantity_threshold;
-                            
-                            // Log Transaction
-                            const newTxId = State.stock_transactions.length + 1;
-                            State.stock_transactions.push({
-                                transaction_id: newTxId,
-                                product_id: prod.product_id,
-                                warehouse_id: loc.warehouse_id,
-                                zone_id: loc.zone_id,
-                                type: 'IN',
-                                quantity: deficit,
-                                timestamp: new Date().toISOString(),
-                                operator: 'System Scheduler',
-                                notes: `Automatic reorder requisition safety threshold replenishment.`
-                            });
-                            
-                            addConsoleLog(`[Reorder SUCCESS] Replenished SKU ${prod.sku} with +${deficit.toFixed(0)} units to max threshold.`, 'success');
-                            reqCount++;
-                        }
-                    }
-                });
-                
-                if (reqCount > 0) {
-                    showToast(`Generated requisition. Replenished ${reqCount} low stock items.`, 'success');
-                    playAlertSound('success');
-                    renderTracking();
-                } else {
-                    showToast('No low stock items need replenishment.', 'info');
-                }
-            });
-        }
-
-        // View All logs button
-        const btnViewAllLogs = document.getElementById('btn-logs-view-all');
-        if (btnViewAllLogs) {
-            btnViewAllLogs.addEventListener('click', () => {
-                DOM.sidebarNav.querySelector('[data-tab="ledger"]').click();
             });
         }
     };
