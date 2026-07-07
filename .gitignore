@@ -1,0 +1,14 @@
+/node_modules
+/public/build
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+/.idea
+/.vscode
+/database/*.sqlite
+/database/database.sqlite

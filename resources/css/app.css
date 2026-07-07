@@ -1,0 +1,206 @@
+@import "tailwindcss";
+
+@theme {
+  --color-slate-50: var(--slate-50);
+  --color-slate-100: var(--slate-100);
+  --color-slate-200: var(--slate-200);
+  --color-slate-300: var(--slate-300);
+  --color-slate-400: var(--slate-400);
+  --color-slate-500: var(--slate-500);
+  --color-slate-600: var(--slate-600);
+  --color-slate-700: var(--slate-700);
+  --color-slate-800: var(--slate-800);
+  --color-slate-900: var(--slate-900);
+  --color-slate-950: var(--slate-950);
+}
+
+:root {
+  --background: #F4F6F4;
+  --foreground: #080D07;
+  --accent-color: #2D6A24;
+  --accent-color-hover: #23531B;
+  --m3-surface: #FFFFFF;
+  --m3-surface-container: #EBF0EB;
+  --m3-surface-container-low: #F1F5F1;
+  --m3-outline-variant: #C9D8C7;
+
+  /* Custom high-contrast light slate theme variables */
+  --slate-50: #F2F6F1;
+  --slate-100: #E4EDE3;
+  --slate-200: #C9D8C7;
+  --slate-300: #A3BE9E;
+  --slate-400: #5D7A59;
+  --slate-500: #485F45;
+  --slate-600: #334530;
+  --slate-700: #202D1E;
+  --slate-800: #111A10;
+  --slate-900: #080D07;
+  --slate-950: #080D07;
+}
+
+/* Explicit forced dark theme */
+:root.dark,
+body.dark {
+  --background: #060B05;
+  --foreground: #F0F5EF;
+  --m3-surface: #0F180D;
+  --m3-surface-container: #152213;
+  --m3-surface-container-low: #1B2A18;
+  --m3-outline-variant: #2D3C2A;
+
+  /* Force dark theme slate variables - High Contrast */
+  --slate-950: #FFFFFF;
+  --slate-900: #FFFFFF;
+  --slate-850: #FAFCFA;
+  --slate-800: #F0F5EF;
+  --slate-700: #E2EAE0;
+  --slate-650: #C4D0C1;
+  --slate-600: #C4D0C1;
+  --slate-500: #A5B5A1;
+  --slate-450: #879A83;
+  --slate-400: #879A83;
+  --slate-350: #546651;
+  --slate-300: #546651;
+  --slate-200: #2D3C2A;
+  --slate-100: #1A2518;
+  --slate-50: #0F180D;
+}
+
+body {
+  background: var(--background) !important;
+  color: var(--foreground) !important;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar for premium visual look */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}
+
+/* Custom M3 Expressive styles */
+input, 
+select, 
+textarea {
+  background: var(--m3-surface) !important;
+  border: 1px solid var(--m3-outline-variant) !important;
+  color: var(--foreground) !important;
+  border-radius: 12px !important;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+input:focus, 
+select:focus, 
+textarea:focus {
+  border-color: var(--accent-color) !important;
+  box-shadow: 0 0 0 2px rgba(45, 106, 36, 0.15) !important;
+}
+
+/* Google Material 3 Expressive Container Styles */
+.card-surface {
+  background: var(--m3-surface) !important;
+  border: 1px solid var(--m3-outline-variant) !important;
+  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.03) !important;
+  border-radius: 20px !important;
+  transition: all 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.card-surface:hover {
+  box-shadow: 0 8px 24px 0 rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Sidebar Submenu navigation button overrides for Material 3 */
+button {
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Custom animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scaleOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(6px);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out forwards;
+}
+
+.animate-slide-up-fade {
+  animation: slideUpFade 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+}
+
+.animate-scale-out {
+  animation: scaleOut 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.font-outfit {
+  font-family: 'Outfit', sans-serif;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
