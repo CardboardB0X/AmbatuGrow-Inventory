@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Currency extends Model
+{
+    protected $table = 'currencies';
+    protected $primaryKey = 'currency_id';
+
+    protected $fillable = ['currency_code', 'currency_name', 'exchange_rate'];
+
+
+    public function products() {
+        return $this->hasMany(Product::class, 'currency_id', 'currency_id');
+    }
+    public function purchaseOrders() {
+        return $this->hasMany(PurchaseOrder::class, 'currency_id', 'currency_id');
+    }
+    public function salesOrders() {
+        return $this->hasMany(SalesOrder::class, 'currency_id', 'currency_id');
+    }
+        
+}
