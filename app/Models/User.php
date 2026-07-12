@@ -15,8 +15,6 @@ class User extends Model
     public function role() {
         return $this->belongsTo(Role::class, 'role_id', 'role_id');
     }
-    public function purchaseOrders() {
-        return $this->hasMany(PurchaseOrder::class, 'created_by', 'user_id');
-    }
+
         
 }

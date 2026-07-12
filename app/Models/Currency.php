@@ -15,11 +15,6 @@ class Currency extends Model
     public function products() {
         return $this->hasMany(Product::class, 'currency_id', 'currency_id');
     }
-    public function purchaseOrders() {
-        return $this->hasMany(PurchaseOrder::class, 'currency_id', 'currency_id');
-    }
-    public function salesOrders() {
-        return $this->hasMany(SalesOrder::class, 'currency_id', 'currency_id');
-    }
+
         
 }

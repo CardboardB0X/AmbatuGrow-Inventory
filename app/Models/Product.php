@@ -27,13 +27,6 @@ class Product extends Model
     public function stockTransactions() {
         return $this->hasMany(StockTransaction::class, 'product_id', 'product_id');
     }
-    public function suppliers() {
-        return $this->belongsToMany(Supplier::class, 'product_supplier', 'product_id', 'supplier_id')
-                    ->withPivot('supplier_sku', 'unit_price', 'lead_time_days', 'is_preferred')
-                    ->withTimestamps();
-    }
-    public function poItems() {
-        return $this->hasMany(PoItem::class, 'product_id', 'product_id');
-    }
+
         
 }

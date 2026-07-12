@@ -15,8 +15,6 @@ class UnitOfMeasure extends Model
     public function products() {
         return $this->hasMany(Product::class, 'uom_id', 'uom_id');
     }
-    public function poItems() {
-        return $this->hasMany(PoItem::class, 'uom_id', 'uom_id');
-    }
+
         
 }
