@@ -1,0 +1,120 @@
+================================================================================
+AMBATUGROW INVENTORY ERP - DATABASE ARCHITECTURE & OPERATIONS GUIDE
+================================================================================
+
+This document provides a detailed explanation of the database architecture, 
+migrations, models, connections, and artisan commands utilized in the 
+Ambatugrow Inventory System.
+
+--------------------------------------------------------------------------------
+1. DATABASE CONNECTION (.env & config/database.php)
+--------------------------------------------------------------------------------
+Laravel manages database connections dynamically using configurations. 
+
+* The .env File:
+  Located at the root of the project, the environment configuration file (.env) 
+  stores credentials and variables specific to your local machine (e.g., Laragon).
+  In this project, the following variables connect Laravel to MySQL:
+  
+  DB_CONNECTION=mysql
+  DB_HOST=127.0.0.1
+  DB_PORT=3306
+  DB_DATABASE=ambatugrow_inventory
+  DB_USERNAME=root
+  DB_PASSWORD=
+
+* config/database.php:
+  This file reads values from `.env` using the `env()` helper function. Under the 
+  'connections' => 'mysql' block, Laravel defines drivers, charsets, and collations 
+  used by PHP's PDO (PHP Data Objects) extension to read and write records to MySQL.
+
+--------------------------------------------------------------------------------
+2. DATABASE MIGRATIONS (database/migrations/)
+--------------------------------------------------------------------------------
+Migrations act like version control for your database, enabling team members to 
+share the same database schema structure.
+
+* How Migrations Work:
+  Each migration file contains a PHP class extending `Migration` with two methods:
+  - up(): Executed when you run migrations. It builds tables, columns, and indexes.
+  - down(): Executed when you roll back migrations. It drops tables or reverses columns.
+  
+* Execution Order:
+  Laravel runs migrations chronologically based on their prefix timestamps.
+  In this system, tables are built in this order to satisfy foreign key constraints:
+  
+  1. roles: Stores user access levels.
+  2. addresses: Stores street details.
+  3. units_of_measure: Stores metrics (e.g. kg, L, bag).
+  4. currencies: Stores PHP/USD conversion exchange rates.
+  5. users: User accounts (linked to roles).
+  6. categories: Product groups.
+  7. products: Catalog items (linked to categories, UOMs, currencies).
+  8. warehouses: Facility details (linked to addresses).
+  9. warehouse_zones: Storage rooms inside warehouses (linked to warehouses).
+  10. inventory_locations: Allocations of products in zones (linked to products/zones).
+  11. stock_transactions: Audit logs of stock in/out/transfer movements.
+
+--------------------------------------------------------------------------------
+3. ELOQUENT MODELS (app/Models/)
+--------------------------------------------------------------------------------
+Eloquent is Laravel's Object-Relational Mapper (ORM). Each table has a corresponding 
+Model class that interacts with the database.
+
+* Key Eloquent Configurations:
+  - protected $table = 'table_name'; 
+    Overrides Laravel's plural naming convention.
+  - protected $primaryKey = 'column_name'; 
+    Declares custom primary key columns (e.g., product_id).
+  - protected $fillable = [...]; 
+    An array of fields allowed for mass assignment to prevent security vulnerabilities.
+
+* Eloquent Relationships:
+  Models use relationships to join tables automatically without writing raw SQL.
+  - belongsTo(): Represents a many-to-one relationship.
+    Example inside Product.php:
+    public function category() {
+        return $this->belongsTo(Category::class, 'category_id', 'category_id');
+    }
+  - hasMany(): Represents a one-to-many relationship.
+    Example inside Warehouse.php:
+    public function zones() {
+        return $this->hasMany(WarehouseZone::class, 'warehouse_id', 'warehouse_id');
+    }
+
+--------------------------------------------------------------------------------
+4. KEY LARAVEL ARTISAN COMMANDS
+--------------------------------------------------------------------------------
+Artisan is the command-line interface included with Laravel. You execute commands 
+from your project root terminal.
+
+* Database Migration Commands:
+  - php artisan migrate
+    Runs all outstanding migrations to create tables in the database.
+  - php artisan migrate:rollback
+    Reverts the last batch of database migrations.
+  - php artisan migrate:fresh
+    Drops all tables and re-runs all migrations from scratch. (WARNING: Purges all data!)
+  - php artisan migrate:fresh --seed
+    Drops all tables, re-migrates, and populates initial values using seeders.
+
+* Seeder Commands:
+  - php artisan db:seed
+    Runs the DatabaseSeeder class to populate database tables with initial records.
+
+* Generator Commands (Scaffolding):
+  - php artisan make:model Product -m
+    Generates a new Product model class along with its corresponding migration file.
+  - php artisan make:controller ApiController
+    Generates a controller class to group request handling logic.
+  - php artisan make:middleware SecurityMiddleware
+    Generates a middleware filter class to sanitize incoming HTTP requests.
+
+* Cache & Server Utility Commands:
+  - php artisan serve
+    Starts Laravel's built-in local development server (defaults to http://127.0.0.1:8000).
+  - php artisan view:clear
+    Clears compiled Blade views cache (forces Laravel to load edited layouts).
+  - php artisan route:list
+    Displays all registered application routes, controllers, and middlewares.
+================================================================================
