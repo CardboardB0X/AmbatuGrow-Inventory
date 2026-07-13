@@ -35,18 +35,20 @@ class DashboardController extends Controller
             // Database-driven tables
             'roles' => Role::all(),
             'users' => User::all()->map(function($u) {
-                $u->password = $u->username === 'admin' ? 'admin123' : 'officer123';
-                $u->name = $u->username === 'admin' ? 'System Admin' : 'Inventory Officer';
-                return $u;
+                $arr = $u->toArray();
+                $arr['password'] = $u->username === 'admin' ? 'admin123' : 'officer123';
+                $arr['name'] = $u->username === 'admin' ? 'System Admin' : 'Inventory Officer';
+                return $arr;
             }),
             'addresses' => Address::all(),
             'units_of_measure' => UnitOfMeasure::all(),
             'currencies' => Currency::all(),
             'categories' => Category::all(),
             'products' => Product::all()->map(function($p) {
-                $p->status = 'Active';
-                $p->max_quantity_threshold = $p->min_quantity_threshold * 10;
-                return $p;
+                $arr = $p->toArray();
+                $arr['status'] = 'Active';
+                $arr['max_quantity_threshold'] = $p->min_quantity_threshold * 10;
+                return $arr;
             }),
             'warehouses' => Warehouse::all(),
             'warehouse_zones' => WarehouseZone::all(),
