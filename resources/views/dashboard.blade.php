@@ -37,4 +37,12 @@
     @include('partials.modals')
 
 </div>
+
+<!-- Include Modularized Tab Views Layouts -->
+@include('partials.views.dashboard')
+@include('partials.views.tracking')
+@include('partials.views.transactions')
+@include('partials.views.warehouse')
+@include('partials.views.reports')
+
 @endsection
