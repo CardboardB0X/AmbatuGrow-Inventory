@@ -5,10 +5,15 @@ A high-fidelity sandbox ERP simulation portal designed to track agricultural sto
 ---
 
 ## 🚀 Technology Stack
-* **Backend:** Laravel 11.x (PHP 8.2+)
-* **Database:** SQLite (Embedded)
+* **Backend:** Laravel 11.x (PHP 8.3+)
+* **Database:** MySQL (administered via phpMyAdmin)
 * **Frontend:** Laravel Blade, Tailwind CSS, Vite, Vanilla ES6 JavaScript
 * **Icons & Charts:** Lucide Icons, Chart.js
+
+---
+
+## 📂 Documentation Reference
+* **[DATABASE_SCHEMA_ERD.md](file:///C:/Users/Japoy/OneDrive/Documents/AmbatuGrow-Inventory/AmbatuGrow-Inventory/DATABASE_SCHEMA_ERD.md):** Complete database schema reference and Entity Relationship Diagram (ERD) mapping.
 
 ---
 
