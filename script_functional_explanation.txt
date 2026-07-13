@@ -1,0 +1,83 @@
+================================================================================
+AMBATUGROW ERP INVENTORY - FRONTEND SCRIPT FUNCTIONAL EXPLANATION
+================================================================================
+
+This document explains the client-side application logic contained in 
+`resources/js/app.js`. The script is modularized into 4 core inventory views 
+that sync dynamically with the backend MySQL database using AJAX.
+
+--------------------------------------------------------------------------------
+1. INVENTORY TRACKING (Tab: 'tracking')
+--------------------------------------------------------------------------------
+* Purpose:
+  Acts as the primary item catalog manager, displaying all agricultural items 
+  currently registered in the warehouse databases along with their attributes.
+
+* Core Functional Features:
+  - Catalog Grid & Cards: Renders the active products from `State.products`, 
+    showing the SKU identifier, name, description, unit of measure (UOM), and price.
+  - Multi-Currency Conversions: Listens to the global currency config state. 
+    If `PHP` is active, it displays prices directly; if `USD` is active, it divides 
+    prices by the exchange rate (58.00) and displays them with '$'.
+  - Search & Category Filters: Allows operators to filter items by category 
+    (e.g., Grains, Fertilizers) and search by SKU or name in real-time.
+  - AJAX Catalog Updates:
+    - Adding Product: Calls `POST /api/products` to insert a new product and 
+      allocate initial stock.
+    - Discontinuing Product: Calls `DELETE /api/products/{id}` to drop the 
+      catalog record and trigger cascadePurges.
+    - Editing Product: Calls `PUT /api/products/{id}` to modify thresholds or pricing.
+
+--------------------------------------------------------------------------------
+2. STOCK TRANSACTIONS (Tab: 'ledger')
+--------------------------------------------------------------------------------
+* Purpose:
+  Acts as the central transaction ledger, providing a read-only audit log of 
+  all stock allocations, disposals, and movements.
+
+* Core Functional Features:
+  - Transaction History Table: Renders a chronologically sorted table of logs 
+    from `State.stock_transactions` containing the product SKU, type, quantity, 
+    and date.
+  - Transaction Type Badging: Color-codes logs:
+    - Green (Stock-in): Indicates stock replenishment or initial setups.
+    - Red (Stock-out): Indicates sales depletions or spoilage write-offs.
+    - Blue (Transfer): Indicates internal relocations between zones.
+  - Transaction Ledger Print: Formats and generates paper/PDF copies of selected 
+    ledgers for auditing.
+
+--------------------------------------------------------------------------------
+3. WAREHOUSE LOCATION TRACKING (Tab: 'zones')
+--------------------------------------------------------------------------------
+* Purpose:
+  Provides a visual layout mapping inventory stock levels to specific warehouses 
+  and zones (aisles/racks) inside CvSU and Dasmariñas warehouses.
+
+* Core Functional Features:
+  - Warehouse Panels: Groups items by their zone allocations (`State.inventory_locations`).
+  - FEFO (First-Expired, First-Out) Optimization: Sorts and highlights batches 
+    in dry storage/temperature control zones based on expiration date, prompting 
+    officers to deplete older items first.
+  - Stock Adjustment Drawer: Slide-out drawer calling `POST /api/adjustments` 
+    to quickly adjust quantities without resetting the catalog profile.
+  - Relocation Transfer Wizard: Modal wizard calling `POST /api/transfers` to 
+    safely relocate physical quantities between warehouse zones.
+
+--------------------------------------------------------------------------------
+4. INVENTORY REPORTS AND ALERTS (Tab: 'reports')
+--------------------------------------------------------------------------------
+* Purpose:
+  Monitors warehouse safety levels, calculates system valuations, and generates 
+  restock notices for deficient items.
+
+* Core Functional Features:
+  - Dynamic Stock Gauges: Calculates total warehouse capacity and tracks 
+    active zone capacity percentages.
+  - Low Stock Alerts: Scans the catalog, comparing active stock levels against 
+    `min_quantity_threshold`. Displays red warning badges on low items.
+  - PO Auto-Generation Wizard: Automatically computes the exact quantity needed 
+    to restore low items back to `max_quantity_threshold` and drafts a Purchase 
+    Order preview with suppliers.
+  - System Valuation Summary: Displays combined valuation of active warehouse stock 
+    in both PHP and USD currencies.
+================================================================================
