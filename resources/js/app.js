@@ -6,7 +6,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // ------------------------------------------
     // 1. STATE STORE (Adhering to Schema)
     // ------------------------------------------
-    const State = {
+    const State = window.AppState ? Object.assign({
+        isAuthenticated: false,
+        currentUser: null,
+        activeTab: 'dashboard',
+        isDark: false,
+        simActive: false,
+        simInterval: null,
+        currency: 'PHP'
+    }, window.AppState) : {
         isAuthenticated: false,
         currentUser: null,
         activeTab: 'dashboard',
@@ -228,6 +236,30 @@ document.addEventListener('DOMContentLoaded', () => {
         cmdInput: document.getElementById('cmd-input'),
         cmdResults: document.getElementById('cmd-results')
     };
+
+    // Sync state with database
+    async function refreshStateFromServer() {
+        try {
+            const res = await fetch('/api/state');
+            const data = await res.json();
+            
+            State.roles = data.roles;
+            State.users = data.users;
+            State.addresses = data.addresses;
+            State.units_of_measure = data.units_of_measure;
+            State.currencies = data.currencies;
+            State.categories = data.categories;
+            State.products = data.products;
+            State.warehouses = data.warehouses;
+            State.warehouse_zones = data.warehouse_zones;
+            State.inventory_locations = data.inventory_locations;
+            State.stock_transactions = data.stock_transactions;
+            
+            renderActiveTab();
+        } catch (err) {
+            console.error('Failed to sync with WMS database:', err);
+        }
+    }
 
     // Tracking workspace filters state (Next.js TrackingWorkspace match)
     let selectedSkus = [];
@@ -1987,7 +2019,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     DOM.btnTransferWizard.addEventListener('click', openTransferWizard);
 
-    DOM.transferForm.addEventListener('submit', (e) => {
+    DOM.transferForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const prodId = parseInt(document.getElementById('transfer-product-id').value);
         const srcZoneId = parseInt(document.getElementById('transfer-source-location').value);
@@ -2011,45 +2043,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const prod = State.products.find(p => p.product_id === prodId);
         const srcZone = State.warehouse_zones.find(z => z.zone_id === srcZoneId);
         const destZone = State.warehouse_zones.find(z => z.zone_id === destZoneId);
-        const destWh = State.warehouses.find(w => w.warehouse_id === destZone.warehouse_id);
 
-        // Deduct source
-        srcLoc.quantity -= qty;
-        
-        // Add or Create destination
-        let destLoc = State.inventory_locations.find(l => l.product_id === prodId && l.zone_id === destZoneId);
-        if (destLoc) {
-            destLoc.quantity += qty;
-        } else {
-            const newId = State.inventory_locations.length + 1;
-            destLoc = {
-                inventory_id: newId,
-                product_id: prodId,
-                warehouse_id: destZone.warehouse_id,
-                zone_id: destZoneId,
-                quantity: qty,
-                expiration_date: srcLoc.expiration_date // Inherit expiration batch date
-            };
-            State.inventory_locations.push(destLoc);
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const res = await fetch('/api/transfers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    product_id: prodId,
+                    source_zone_id: srcZoneId,
+                    dest_zone_id: destZoneId,
+                    quantity: qty,
+                    operator: operator,
+                    notes: notes
+                })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Server error occurred.');
+            }
+
+            await refreshStateFromServer();
+            DOM.modalTransferWizard.classList.add('hidden');
+            renderWorkspace();
+            showToast(`Stock transfer of ${qty.toFixed(1)} units executed successfully.`, 'success');
+            addConsoleLog(`[Transfer SUCCESS] Relocated ${qty} units of ${prod.sku}. Transaction signed.`, 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
         }
-
-        // Log transaction
-        const newTxId = State.stock_transactions.length + 1;
-        State.stock_transactions.push({
-            transaction_id: newTxId,
-            product_id: prodId,
-            warehouse_id: destZone.warehouse_id,
-            transaction_type: 'Transfer',
-            quantity: qty,
-            transaction_date: new Date().toISOString(),
-            notes: `Relocated ${qty} units from ${srcZone.zone_name} to ${destZone.zone_name}. Operator: ${operator}. Remarks: ${notes}`
-        });
-
-        // Close and Refresh
-        DOM.modalTransferWizard.classList.add('hidden');
-        renderWorkspace();
-        showToast(`Stock transfer of ${qty.toFixed(1)} units executed successfully.`, 'success');
-        addConsoleLog(`[Transfer SUCCESS] Relocated ${qty} units of ${prod.sku}. Transaction signed.`, 'success');
     });
 
     // FORM: REGISTER NEW PRODUCT
@@ -2098,7 +2123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    DOM.productForm.addEventListener('submit', (e) => {
+    DOM.productForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const sku = document.getElementById('prod-sku').value;
         const name = document.getElementById('prod-name').value;
@@ -2121,55 +2146,43 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Insert Product
-        const newProdId = State.products.length + 1;
-        const newProduct = {
-            product_id: newProdId,
-            sku: sku,
-            name: name,
-            description: desc,
-            category_id: categoryId,
-            uom_id: uomId,
-            currency_id: currencyId,
-            base_price: basePrice,
-            min_quantity_threshold: minQty,
-            max_quantity_threshold: maxQty,
-            lead_time_days: leadTime,
-            status: 'Active'
-        };
-        State.products.push(newProduct);
-
-        // Allocate initial inventory if quantity > 0
-        const initZone = State.warehouse_zones.find(z => z.zone_id === initZoneId);
-        
-        if (initQty > 0) {
-            const newLocId = State.inventory_locations.length + 1;
-            State.inventory_locations.push({
-                inventory_id: newLocId,
-                product_id: newProdId,
-                warehouse_id: initZone.warehouse_id,
-                zone_id: initZoneId,
-                quantity: initQty,
-                expiration_date: expDate
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const res = await fetch('/api/products', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    sku: sku,
+                    name: name,
+                    description: desc,
+                    category_id: categoryId,
+                    uom_id: uomId,
+                    currency_id: currencyId,
+                    base_price: basePrice,
+                    min_quantity_threshold: minQty,
+                    lead_time_days: leadTime,
+                    init_zone_id: initZoneId,
+                    init_qty: initQty,
+                    init_expiration: expDate
+                })
             });
 
-            // Log Transaction
-            const newTxId = State.stock_transactions.length + 1;
-            State.stock_transactions.push({
-                transaction_id: newTxId,
-                product_id: newProdId,
-                warehouse_id: initZone.warehouse_id,
-                transaction_type: 'Stock-in',
-                quantity: initQty,
-                transaction_date: new Date().toISOString(),
-                notes: `Initial stock adjustment setup on product registration.`
-            });
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Server error occurred.');
+            }
+
+            await refreshStateFromServer();
+            DOM.modalNewProduct.classList.add('hidden');
+            renderWorkspace();
+            showToast(`Product ${name} successfully registered.`, 'success');
+            addConsoleLog(`[Product REGISTERED] ${sku} - ${name} added to database.`, 'success');
+        } catch (err) {
+            showToast(err.message, 'error');
         }
-
-        DOM.modalNewProduct.classList.add('hidden');
-        renderWorkspace();
-        showToast(`Product ${name} successfully registered.`, 'success');
-        addConsoleLog(`[Product REGISTERED] ${sku} - ${name} added to master file.`, 'success');
     });
 
     // EDIT PRODUCT DETAILS HANDLERS
@@ -2204,7 +2217,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const editForm = document.getElementById('edit-product-form');
     if (editForm) {
-        editForm.addEventListener('submit', (e) => {
+        editForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const prodId = parseInt(document.getElementById('edit-prod-id').value);
             const name = document.getElementById('edit-prod-name').value;
@@ -2224,19 +2237,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            // Apply updates
-            prod.name = name;
-            prod.sku = sku;
-            prod.base_price = price;
-            prod.lead_time_days = leadTime;
-            prod.min_quantity_threshold = minQty;
-            prod.max_quantity_threshold = maxQty;
-            prod.category_id = categoryId;
+            try {
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const res = await fetch(`/api/products/${prodId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        sku: sku,
+                        base_price: price,
+                        lead_time_days: leadTime,
+                        min_quantity_threshold: minQty,
+                        max_quantity_threshold: maxQty,
+                        category_id: categoryId
+                    })
+                });
 
-            document.getElementById('modal-edit-product').classList.add('hidden');
-            renderWorkspace();
-            showToast(`Product ${name} updated successfully.`, 'success');
-            addConsoleLog(`[Catalog UPDATE] SKU ${sku} properties modified.`, 'info');
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Server error occurred.');
+                }
+
+                await refreshStateFromServer();
+                document.getElementById('modal-edit-product').classList.add('hidden');
+                renderWorkspace();
+                showToast(`Product ${name} updated successfully.`, 'success');
+                addConsoleLog(`[Catalog UPDATE] SKU ${sku} properties modified in database.`, 'info');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
         });
     }
 
@@ -2254,23 +2286,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const confirmDeleteBtn = document.getElementById('btn-confirm-delete');
     if (confirmDeleteBtn) {
-        confirmDeleteBtn.addEventListener('click', () => {
+        confirmDeleteBtn.addEventListener('click', async () => {
             const prodId = parseInt(document.getElementById('delete-prod-id').value);
-            const prodIndex = State.products.findIndex(p => p.product_id === prodId);
-            if (prodIndex === -1) return;
+            const prod = State.products.find(p => p.product_id === prodId);
+            if (!prod) return;
 
-            const prod = State.products[prodIndex];
-            
-            // Delete product
-            State.products.splice(prodIndex, 1);
+            try {
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                const res = await fetch(`/api/products/${prodId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': token
+                    }
+                });
 
-            // Cascade delete inventory location allocations
-            State.inventory_locations = State.inventory_locations.filter(l => l.product_id !== prodId);
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.error || 'Server error occurred.');
+                }
 
-            document.getElementById('modal-delete-product').classList.add('hidden');
-            renderWorkspace();
-            showToast(`Product ${prod.name} discontinued and removed.`, 'success');
-            addConsoleLog(`[Catalog DELETE] SKU ${prod.sku} discontinued. Inventory purged.`, 'warning');
+                await refreshStateFromServer();
+                document.getElementById('modal-delete-product').classList.add('hidden');
+                renderWorkspace();
+                showToast(`Product ${prod.name} discontinued and removed.`, 'success');
+                addConsoleLog(`[Catalog DELETE] SKU ${prod.sku} discontinued from database.`, 'warning');
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
         });
     }
 
@@ -2439,7 +2481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openAdjustStockDrawer(invId);
     };
 
-    DOM.btnSubmitAdjust.addEventListener('click', (e) => {
+    DOM.btnSubmitAdjust.addEventListener('click', async (e) => {
         e.preventDefault();
         const invId = parseInt(document.getElementById('adjust-inventory-id').value);
         const qty = parseFloat(document.getElementById('adjust-qty').value);
@@ -2463,38 +2505,42 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Adjust qty
-        if (action === 'in') {
-            if (prod && prod.max_quantity_threshold && (loc.quantity + qty) > prod.max_quantity_threshold) {
-                showToast(`Threshold Alert: Exceeds maximum catalog capacity of ${prod.max_quantity_threshold.toFixed(0)} units!`, 'info');
-                addConsoleLog(`[Capacity Warning] SKU ${prod.sku} quantity (${(loc.quantity + qty).toFixed(1)}) exceeds maximum threshold limit.`, 'warning');
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const res = await fetch('/api/adjustments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token
+                },
+                body: JSON.stringify({
+                    inventory_id: invId,
+                    action: action,
+                    quantity: qty,
+                    operator: operator,
+                    notes: notes
+                })
+            });
+
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Server error occurred.');
             }
-            loc.quantity += qty;
-        } else {
-            loc.quantity -= qty;
+
+            await refreshStateFromServer();
+
+            // Close Drawer slide animation
+            const dBody = DOM.drawerAdjustStock.querySelector('.bg-white');
+            dBody.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                DOM.drawerAdjustStock.classList.add('hidden');
+                renderWorkspace();
+                showToast(`Manual stock adjustment applied successfully.`, 'success');
+                addConsoleLog(`[Adjust SUCCESS] ${typeLabel} of ${qty.toFixed(1)} units on SKU ${prod.sku}.`, 'success');
+            }, 300);
+        } catch (err) {
+            showToast(err.message, 'error');
         }
-
-        // Log transaction
-        const newTxId = State.stock_transactions.length + 1;
-        State.stock_transactions.push({
-            transaction_id: newTxId,
-            product_id: loc.product_id,
-            warehouse_id: loc.warehouse_id,
-            transaction_type: typeLabel,
-            quantity: qty,
-            transaction_date: new Date().toISOString(),
-            notes: `Manual adjustment by operator ${operator}. Reason: ${notes}`
-        });
-
-        // Close Drawer slide animation
-        const dBody = DOM.drawerAdjustStock.querySelector('.bg-white');
-        dBody.style.transform = 'translateX(100%)';
-        setTimeout(() => {
-            DOM.drawerAdjustStock.classList.add('hidden');
-            renderWorkspace();
-            showToast(`Manual stock adjustment applied successfully.`, 'success');
-            addConsoleLog(`[Adjust SUCCESS] ${typeLabel} of ${qty.toFixed(1)} units on SKU ${prod.sku}.`, 'success');
-        }, 300);
     });
 
     // SETTINGS PANEL & OTHER TRIGGER FALLBACKS

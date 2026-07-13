@@ -23,6 +23,13 @@
 
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Global App State -->
+    @if(isset($appState))
+        <script>
+            window.AppState = {!! json_encode($appState) !!};
+        </script>
+    @endif
 </head>
 <body class="min-h-full bg-slate-50 text-slate-900 antialiased font-sans transition-colors duration-300">
     @yield('content')
