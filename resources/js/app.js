@@ -445,12 +445,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 let iconElement = '<i data-lucide="arrow-down" class="w-3.5 h-3.5"></i>';
                 let iconBgClass = 'bg-[#e6f4ea] text-[#137333]'; // Stock-In green
-                let messageTitle = `Stock-In +${tx.quantity.toFixed(0)}`;
+                let messageTitle = `Stock-In +${parseFloat(tx.quantity).toFixed(0)}`;
 
                 if (tx.type === 'OUT') {
                     iconElement = '<i data-lucide="arrow-up" class="w-3.5 h-3.5"></i>';
                     iconBgClass = 'bg-[#fef7e0] text-[#b06000]'; // Stock-Out orange
-                    messageTitle = `Stock-Out -${tx.quantity.toFixed(0)}`;
+                    messageTitle = `Stock-Out -${parseFloat(tx.quantity).toFixed(0)}`;
                 } else if (tx.notes && tx.notes.includes('relocation')) {
                     iconElement = '<i data-lucide="arrow-right-left" class="w-3.5 h-3.5"></i>';
                     iconBgClass = 'bg-[#e8f0fe] text-[#1a73e8]'; // Transfer blue
@@ -943,7 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="py-2.5">
                     <span class="px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider ${badgeClass}">${tx.transaction_type}</span>
                 </td>
-                <td class="py-2.5 text-right font-bold text-slate-700 font-mono">${tx.quantity.toFixed(1)}</td>
+                <td class="py-2.5 text-right font-bold text-slate-700 font-mono">${parseFloat(tx.quantity).toFixed(1)}</td>
             `;
             txTbody.appendChild(row);
         });
@@ -1623,7 +1623,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             <h3 class="text-base font-black text-slate-800 font-outfit">${wh.name}</h3>
                             <span class="block text-[9px] font-bold text-slate-400 uppercase mt-0.5">${addr ? `${addr.street}, ${addr.city}` : 'No address record'}</span>
                         </div>
-                        <span class="text-[9px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full font-black uppercase tracking-wider border border-slate-200">${wh.capacity_sqm.toFixed(0)} sqm</span>
+                        <span class="text-[9px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full font-black uppercase tracking-wider border border-slate-200">${parseFloat(wh.capacity_sqm).toFixed(0)} sqm</span>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100">

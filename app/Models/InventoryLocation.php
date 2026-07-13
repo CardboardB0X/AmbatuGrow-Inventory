@@ -11,6 +11,10 @@ class InventoryLocation extends Model
 
     protected $fillable = ['product_id', 'warehouse_id', 'zone_id', 'quantity', 'expiration_date'];
 
+    protected $casts = [
+        'quantity' => 'float',
+    ];
+
 
     public function product() {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');

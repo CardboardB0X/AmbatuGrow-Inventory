@@ -11,6 +11,11 @@ class Product extends Model
 
     protected $fillable = ['sku', 'name', 'description', 'category_id', 'uom_id', 'currency_id', 'base_price', 'min_quantity_threshold', 'lead_time_days'];
 
+    protected $casts = [
+        'base_price' => 'float',
+        'min_quantity_threshold' => 'float',
+    ];
+
 
     public function category() {
         return $this->belongsTo(Category::class, 'category_id', 'category_id');

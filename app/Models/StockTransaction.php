@@ -11,6 +11,10 @@ class StockTransaction extends Model
 
     protected $fillable = ['product_id', 'warehouse_id', 'transaction_type', 'quantity', 'transaction_date', 'reference_id', 'reference_type'];
 
+    protected $casts = [
+        'quantity' => 'float',
+    ];
+
 
     public function product() {
         return $this->belongsTo(Product::class, 'product_id', 'product_id');

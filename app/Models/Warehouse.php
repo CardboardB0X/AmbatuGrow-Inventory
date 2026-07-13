@@ -11,6 +11,10 @@ class Warehouse extends Model
 
     protected $fillable = ['name', 'address_id', 'capacity_sqm'];
 
+    protected $casts = [
+        'capacity_sqm' => 'float',
+    ];
+
 
     public function address() {
         return $this->belongsTo(Address::class, 'address_id', 'address_id');

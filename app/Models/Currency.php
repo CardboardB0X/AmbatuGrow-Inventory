@@ -11,6 +11,10 @@ class Currency extends Model
 
     protected $fillable = ['currency_code', 'currency_name', 'exchange_rate'];
 
+    protected $casts = [
+        'exchange_rate' => 'float',
+    ];
+
 
     public function products() {
         return $this->hasMany(Product::class, 'currency_id', 'currency_id');
