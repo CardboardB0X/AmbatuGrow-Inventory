@@ -14,7 +14,7 @@ window.renderLedger = function(State, DOM, showToast, addConsoleLog) {
                         <p class="text-[10px] text-slate-400 font-semibold leading-relaxed">All stock ins, outs, and zone relocation transfers are securely written to this history log. These details cannot be altered.</p>
                     </div>
                 </div>
-                \${State.currentUser.role_id === 1 ? `
+                ${State.currentUser.role_id === 1 ? `
                 <button id="btn-export-ledger" class="py-1.5 px-3 bg-white hover:bg-slate-50 text-slate-600 rounded-xl border border-slate-200 text-[10px] font-bold shadow-2xs flex items-center gap-1 transition-all cursor-pointer">
                     <i data-lucide="download" class="w-3.5 h-3.5"></i>
                     <span>Export CSV</span>
@@ -64,18 +64,18 @@ window.renderLedger = function(State, DOM, showToast, addConsoleLog) {
         const row = document.createElement('tr');
         row.className = 'border-b border-slate-100 hover:bg-slate-50/80';
         row.innerHTML = `
-            <td class="py-3.5 font-mono font-bold text-slate-400">TX-#\${String(tx.transaction_id).padStart(4, '0')}</td>
-            <td class="py-3.5 font-mono text-[10px] text-slate-500">\${new Date(tx.transaction_date).toLocaleString('en-US')}</td>
+            <td class="py-3.5 font-mono font-bold text-slate-400">TX-#${String(tx.transaction_id).padStart(4, '0')}</td>
+            <td class="py-3.5 font-mono text-[10px] text-slate-500">${new Date(tx.transaction_date).toLocaleString('en-US')}</td>
             <td class="py-3.5 font-bold text-slate-800">
-                <span class="block">\${prod ? prod.name : 'Unknown Product'}</span>
-                <span class="block font-mono text-[9px] text-slate-400">\${prod ? prod.sku : ''}</span>
+                <span class="block">${prod ? prod.name : 'Unknown Product'}</span>
+                <span class="block font-mono text-[9px] text-slate-400">${prod ? prod.sku : ''}</span>
             </td>
-            <td class="py-3.5 text-slate-600 font-semibold">\${wh ? wh.name : 'Unknown Hub'}</td>
+            <td class="py-3.5 text-slate-600 font-semibold">${wh ? wh.name : 'Unknown Hub'}</td>
             <td class="py-3.5">
-                <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider border \${badgeClass}">\${tx.transaction_type}</span>
+                <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider border ${badgeClass}">${tx.transaction_type}</span>
             </td>
-            <td class="py-3.5 text-right font-black font-mono text-slate-800">\${parseFloat(tx.quantity).toFixed(2)} \${uom ? uom.uom_code : ''}</td>
-            <td class="py-3.5 text-slate-400 font-bold max-w-xs truncate">\${tx.notes || 'Routine update.'}</td>
+            <td class="py-3.5 text-right font-black font-mono text-slate-800">${parseFloat(tx.quantity).toFixed(2)} ${uom ? uom.uom_code : ''}</td>
+            <td class="py-3.5 text-slate-400 font-bold max-w-xs truncate">${tx.notes || 'Routine update.'}</td>
         `;
         tbody.appendChild(row);
     });
@@ -102,14 +102,14 @@ window.renderLedger = function(State, DOM, showToast, addConsoleLog) {
             });
             
             const csvString = [headers, ...rows]
-                .map(e => e.map(val => `"\${String(val).replace(/"/g, '""')}"`).join(","))
+                .map(e => e.map(val => `"${String(val).replace(/"/g, '""')}"`).join(","))
                 .join("\n");
             
             const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement("a");
             link.setAttribute("href", url);
-            link.setAttribute("download", `ambatugrow_ledger_export_\${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute("download", `ambatugrow_ledger_export_${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -121,3 +121,4 @@ window.renderLedger = function(State, DOM, showToast, addConsoleLog) {
     }
 };
 </script>
+

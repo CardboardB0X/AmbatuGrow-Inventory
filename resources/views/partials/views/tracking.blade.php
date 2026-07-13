@@ -11,7 +11,7 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
     let catOptionsHTML = '<option value="All">All Categories</option>';
     State.categories.forEach(c => {
         const selected = State.selectedCategoryFilter === c.category_name ? 'selected' : '';
-        catOptionsHTML += `<option value="\${c.category_name}" \${selected}>\${c.category_name}</option>`;
+        catOptionsHTML += `<option value="${c.category_name}" ${selected}>${c.category_name}</option>`;
     });
 
     // Filter and get items
@@ -66,7 +66,7 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
 
     const getShelfNo = (zoneId) => {
         const mapping = { 1: 'A-101', 2: 'B-205', 3: 'A-102', 4: 'C-301' };
-        return mapping[zoneId] || `S-\${100 + zoneId}`;
+        return mapping[zoneId] || `S-${100 + zoneId}`;
     };
 
     const getCapitalizedUom = (code) => {
@@ -84,9 +84,9 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
         <div class="flex flex-col min-h-0 space-y-6 animate-slide-up-fade h-full">
             
             <!-- Zone Filter Indicator Banner -->
-            \${State.selectedZoneFilter ? `
+            ${State.selectedZoneFilter ? `
             <div class="bg-emerald-50 border border-emerald-200/80 rounded-2xl px-4 py-2 flex items-center justify-between text-xs text-emerald-800 font-bold shrink-0">
-                <span>Active Zone Filter: <strong>\${State.selectedZoneFilter}</strong></span>
+                <span>Active Zone Filter: <strong>${State.selectedZoneFilter}</strong></span>
                 <button id="btn-clear-zone-filter" class="text-emerald-700 hover:text-red-700 font-extrabold cursor-pointer bg-transparent border-none">
                     Clear Filter &times;
                 </button>
@@ -96,7 +96,7 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
             <!-- Filter and Top Actions Header (Screenshot Match) -->
             <div class="bg-white border border-slate-200 p-5 rounded-3xl flex items-center justify-between gap-4 shrink-0 shadow-2xs">
                 <!-- Left Side: Add Button -->
-                \${State.currentUser.role_id === 1 ? `
+                ${State.currentUser.role_id === 1 ? `
                 <button id="btn-add-product" class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2D6A24] hover:bg-[#23531B] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer border-none font-outfit">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                     <span>Add New Inventory Item</span>
@@ -108,29 +108,29 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
                     <div class="flex flex-col gap-1">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Category</span>
                         <select id="filter-category" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
-                            \${catOptionsHTML}
+                            ${catOptionsHTML}
                         </select>
                     </div>
 
                     <div class="flex flex-col gap-1">
                         <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Status</span>
                         <select id="filter-status" class="px-3 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-[#2D6A24] cursor-pointer min-w-[140px]">
-                            <option value="All" \${State.selectedStatusFilter === 'All' ? 'selected' : ''}>All Statuses</option>
-                            <option value="Active" \${State.selectedStatusFilter === 'Active' ? 'selected' : ''}>Active</option>
-                            <option value="Obsolete" \${State.selectedStatusFilter === 'Obsolete' ? 'selected' : ''}>Obsolete</option>
+                            <option value="All" ${State.selectedStatusFilter === 'All' ? 'selected' : ''}>All Statuses</option>
+                            <option value="Active" ${State.selectedStatusFilter === 'Active' ? 'selected' : ''}>Active</option>
+                            <option value="Obsolete" ${State.selectedStatusFilter === 'Obsolete' ? 'selected' : ''}>Obsolete</option>
                         </select>
                     </div>
                 </div>
             </div>
 
             <!-- Bulk Action Panel -->
-            \${State.selectedSkus.length > 0 ? `
+            ${State.selectedSkus.length > 0 ? `
             <div class="bg-emerald-950 text-white rounded-2xl px-5 py-3 flex items-center justify-between text-xs shadow-md border border-emerald-900 animate-slide-up-fade shrink-0">
-                <span class="font-bold font-outfit">\${State.selectedSkus.length} items selected</span>
+                <span class="font-bold font-outfit">${State.selectedSkus.length} items selected</span>
                 <div class="flex items-center gap-3">
                     <button id="btn-bulk-active" class="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Active</button>
                     <button id="btn-bulk-obsolete" class="px-3 py-1.5 bg-amber-800 hover:bg-amber-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Obsolete</button>
-                    \${State.currentUser.role_id === 1 ? `
+                    ${State.currentUser.role_id === 1 ? `
                     <button id="btn-bulk-delete" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Delete</button>
                     ` : ''}
                     <button id="btn-bulk-cancel" class="text-emerald-400 hover:text-emerald-300 font-bold cursor-pointer bg-transparent border-none">Cancel</button>
@@ -155,7 +155,7 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
                         <thead>
                             <tr class="bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-500 uppercase tracking-widest select-none">
                                 <th class="p-4 w-12 text-center">
-                                    <input type="checkbox" id="check-all-skus" \${isAllSelected ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4" />
+                                    <input type="checkbox" id="check-all-skus" ${isAllSelected ? 'checked' : ''} class="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer w-4 h-4" />
                                 </th>
                                 <th class="p-4">SKU</th>
                                 <th class="p-4">Item Name</th>
@@ -176,10 +176,10 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
 
                 <!-- Total counts footer -->
                 <div class="bg-slate-50 border-t border-slate-100 px-6 py-3.5 flex items-center justify-between text-[10px] text-slate-500 font-black select-none shrink-0">
-                    <span>Showing \${filteredItems.length} of \${items.length} items</span>
+                    <span>Showing ${filteredItems.length} of ${items.length} items</span>
                     <div class="flex gap-4">
-                        <span>Active: \${items.filter(i => i.status === 'Active').length}</span>
-                        <span>Obsolete: \${items.filter(i => i.status === 'Obsolete').length}</span>
+                        <span>Active: ${items.filter(i => i.status === 'Active').length}</span>
+                        <span>Obsolete: ${items.filter(i => i.status === 'Obsolete').length}</span>
                     </div>
                 </div>
             </div>
@@ -214,41 +214,41 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
             }
 
             const tr = document.createElement('tr');
-            tr.className = `transition-colors \${rowBgClass}`;
+            tr.className = `transition-colors ${rowBgClass}`;
             tr.innerHTML = `
                 <td class="p-4 text-center">
-                    <input type="checkbox" data-sku="\${item.sku}" class="check-sku rounded border-slate-300 text-[#2D6A24] focus:ring-[#2D6A24] cursor-pointer w-4 h-4" \${isSelected ? 'checked' : ''} />
+                    <input type="checkbox" data-sku="${item.sku}" class="check-sku rounded border-slate-300 text-[#2D6A24] focus:ring-[#2D6A24] cursor-pointer w-4 h-4" ${isSelected ? 'checked' : ''} />
                 </td>
-                <td class="p-4 font-mono font-bold text-slate-800">\${item.sku}</td>
-                <td class="p-4 font-bold text-slate-700">\${item.name}</td>
-                <td class="p-4 text-slate-400 font-normal max-w-xs truncate" title="\${item.description}">\${item.description}</td>
-                <td class="p-4 text-slate-500 font-semibold">\${item.category}</td>
-                <td class="p-4 font-mono text-slate-600 font-bold">\${getShelfNo(item.zone_id)}</td>
+                <td class="p-4 font-mono font-bold text-slate-800">${item.sku}</td>
+                <td class="p-4 font-bold text-slate-700">${item.name}</td>
+                <td class="p-4 text-slate-400 font-normal max-w-xs truncate" title="${item.description}">${item.description}</td>
+                <td class="p-4 text-slate-500 font-semibold">${item.category}</td>
+                <td class="p-4 font-mono text-slate-600 font-bold">${getShelfNo(item.zone_id)}</td>
                 <td class="p-4 text-right font-black tabular-nums">
                     <div class="flex items-center justify-end gap-1.5">
-                        \${isLowStock ? `
+                        ${isLowStock ? `
                         <span title="Below safety minimum threshold">
                             <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-red-500 fill-red-100"></i>
                         </span>
                         ` : ''}
-                        \${isOverstocked ? `
+                        ${isOverstocked ? `
                         <span title="Exceeds maximum threshold limit (Overstocked)">
                             <i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-rose-500 fill-rose-100"></i>
                         </span>
                         ` : ''}
-                        <span class="\${item.stockQty === 0 ? 'text-red-500 font-black' : 'text-slate-800'}">\${parseFloat(item.stockQty).toFixed(0)}</span>
+                        <span class="${item.stockQty === 0 ? 'text-red-500 font-black' : 'text-slate-800'}">${parseFloat(item.stockQty).toFixed(0)}</span>
                     </div>
                 </td>
-                <td class="p-4 text-slate-400 font-black text-[10px]">\${getCapitalizedUom(item.uom)}</td>
-                <td class="p-4 text-center">\${badgeHTML}</td>
+                <td class="p-4 text-slate-400 font-black text-[10px]">${getCapitalizedUom(item.uom)}</td>
+                <td class="p-4 text-center">${badgeHTML}</td>
                 <td class="p-4 text-center font-bold text-[11px] select-none whitespace-nowrap">
                     <div class="flex items-center justify-center gap-3">
-                        <button data-sku="\${item.sku}" class="btn-action-edit text-slate-500 hover:text-slate-800 hover:underline cursor-pointer bg-transparent border-none">Edit</button>
-                        \${item.status === 'Active' ? `
-                        <button data-sku="\${item.sku}" class="btn-action-archive text-amber-700 hover:text-amber-900 hover:underline cursor-pointer bg-transparent border-none">Archive</button>
+                        <button data-sku="${item.sku}" class="btn-action-edit text-slate-500 hover:text-slate-800 hover:underline cursor-pointer bg-transparent border-none">Edit</button>
+                        ${item.status === 'Active' ? `
+                        <button data-sku="${item.sku}" class="btn-action-archive text-amber-700 hover:text-amber-900 hover:underline cursor-pointer bg-transparent border-none">Archive</button>
                         ` : `
-                        \${State.currentUser.role_id === 1 ? `
-                        <button data-sku="\${item.sku}" class="btn-action-delete text-red-600 hover:text-red-800 hover:underline cursor-pointer bg-transparent border-none">Delete</button>
+                        ${State.currentUser.role_id === 1 ? `
+                        <button data-sku="${item.sku}" class="btn-action-delete text-red-600 hover:text-red-800 hover:underline cursor-pointer bg-transparent border-none">Delete</button>
                         ` : `<span class="text-slate-300">Locked</span>`}
                         `}
                     </div>
@@ -298,13 +298,13 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
         const rows = filteredItems.map(i => [
             i.sku, i.name, i.description, i.category, i.stockQty.toFixed(0), i.uom, i.status, i.zone
         ]);
-        const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.map(val => `"\${val}"`).join(","))].join("\n");
+        const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.map(val => `"${val}"`).join(","))].join("\n");
         
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
         link.setAttribute("href", url);
-        link.setAttribute("download", `master_inventory_\${Date.now()}.csv`);
+        link.setAttribute("download", `master_inventory_${Date.now()}.csv`);
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -354,8 +354,8 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
             const prod = State.products.find(p => p.sku === sku);
             if (prod) {
                 prod.status = 'Obsolete';
-                showToast(`SKU \${sku} archived (Obsolete).`, 'success');
-                addConsoleLog(`[Catalog ARCHIVE] SKU \${sku} status set to OBSOLETE.`, 'warning');
+                showToast(`SKU ${sku} archived (Obsolete).`, 'success');
+                addConsoleLog(`[Catalog ARCHIVE] SKU ${sku} status set to OBSOLETE.`, 'warning');
                 window.renderTracking(State, DOM, formatPHP, lucide, openNewProductModal, openEditProductModal, openDeleteProductModal, showToast, addConsoleLog);
             }
         });
@@ -380,8 +380,8 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
                 const prod = State.products.find(p => p.sku === sku);
                 if (prod) prod.status = 'Active';
             });
-            showToast(`\${State.selectedSkus.length} items set to Active.`, 'success');
-            addConsoleLog(`[Bulk Action] \${State.selectedSkus.length} SKU status updated to ACTIVE.`, 'success');
+            showToast(`${State.selectedSkus.length} items set to Active.`, 'success');
+            addConsoleLog(`[Bulk Action] ${State.selectedSkus.length} SKU status updated to ACTIVE.`, 'success');
             State.selectedSkus = [];
             window.renderTracking(State, DOM, formatPHP, lucide, openNewProductModal, openEditProductModal, openDeleteProductModal, showToast, addConsoleLog);
         });
@@ -394,8 +394,8 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
                 const prod = State.products.find(p => p.sku === sku);
                 if (prod) prod.status = 'Obsolete';
             });
-            showToast(`\${State.selectedSkus.length} items archived (Obsolete).`, 'success');
-            addConsoleLog(`[Bulk Action] \${State.selectedSkus.length} SKU status updated to OBSOLETE.`, 'warning');
+            showToast(`${State.selectedSkus.length} items archived (Obsolete).`, 'success');
+            addConsoleLog(`[Bulk Action] ${State.selectedSkus.length} SKU status updated to OBSOLETE.`, 'warning');
             State.selectedSkus = [];
             window.renderTracking(State, DOM, formatPHP, lucide, openNewProductModal, openEditProductModal, openDeleteProductModal, showToast, addConsoleLog);
         });
@@ -404,16 +404,16 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
     const btnBulkDelete = document.getElementById('btn-bulk-delete');
     if (btnBulkDelete) {
         btnBulkDelete.addEventListener('click', () => {
-            if (confirm(`Are you sure you want to permanently discontinue these \${State.selectedSkus.length} products? This will purge all matching warehouse inventory.`)) {
+            if (confirm(`Are you sure you want to permanently discontinue these ${State.selectedSkus.length} products? This will purge all matching warehouse inventory.`)) {
                 State.selectedSkus.forEach(sku => {
                     const prod = State.products.find(p => p.sku === sku);
                     if (prod) {
                         State.products = State.products.filter(p => p.product_id !== prod.product_id);
                         State.inventory_locations = State.inventory_locations.filter(loc => loc.product_id !== prod.product_id);
-                        addConsoleLog(`[Catalog DELETE] SKU \${sku} discontinued. Inventory purged.`, 'warning');
+                        addConsoleLog(`[Catalog DELETE] SKU ${sku} discontinued. Inventory purged.`, 'warning');
                     }
                 });
-                showToast(`\${State.selectedSkus.length} products discontinued successfully.`, 'success');
+                showToast(`${State.selectedSkus.length} products discontinued successfully.`, 'success');
                 State.selectedSkus = [];
                 window.renderTracking(State, DOM, formatPHP, lucide, openNewProductModal, openEditProductModal, openDeleteProductModal, showToast, addConsoleLog);
             }
@@ -429,3 +429,4 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
     }
 };
 </script>
+

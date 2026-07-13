@@ -89,17 +89,17 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
             itemDiv.className = 'p-3.5 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex justify-between items-center';
             itemDiv.innerHTML = `
                 <div class="space-y-1">
-                    <h4 class="text-xs font-black text-slate-800">\${item.name}</h4>
-                    <span class="block text-[8px] font-bold text-slate-400 uppercase">SKU: \${item.sku} | Location: \${item.whName}</span>
+                    <h4 class="text-xs font-black text-slate-800">${item.name}</h4>
+                    <span class="block text-[8px] font-bold text-slate-400 uppercase">SKU: ${item.sku} | Location: ${item.whName}</span>
                     <!-- Reorder Button -->
-                    <button data-inventory-id="\${item.inventory_id}" class="btn-generate-po px-2.5 py-1 mt-1 bg-[#2D6A24] text-white hover:bg-[#23531B] rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1 cursor-pointer">
+                    <button data-inventory-id="${item.inventory_id}" class="btn-generate-po px-2.5 py-1 mt-1 bg-[#2D6A24] text-white hover:bg-[#23531B] rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center gap-1 cursor-pointer">
                         <i data-lucide="file-plus" class="w-3 h-3"></i>
                         <span>Generate PO</span>
                     </button>
                 </div>
                 <div class="text-right">
-                    <span class="block text-xs font-black text-rose-600 font-mono">\${item.qty.toFixed(1)} left</span>
-                    <span class="block text-[8px] font-bold text-slate-400 uppercase">Threshold: \${item.min.toFixed(0)}</span>
+                    <span class="block text-xs font-black text-rose-600 font-mono">${item.qty.toFixed(1)} left</span>
+                    <span class="block text-[8px] font-bold text-slate-400 uppercase">Threshold: ${item.min.toFixed(0)}</span>
                 </div>
             `;
             lsContainer.appendChild(itemDiv);
@@ -118,15 +118,15 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
             const bgClass = isExpired ? 'bg-rose-500/5 border-rose-500/20' : 'bg-amber-500/5 border-amber-500/20';
 
             const itemDiv = document.createElement('div');
-            itemDiv.className = `p-3.5 border rounded-2xl flex justify-between items-center \${bgClass}`;
+            itemDiv.className = `p-3.5 border rounded-2xl flex justify-between items-center ${bgClass}`;
             itemDiv.innerHTML = `
                 <div class="space-y-1">
-                    <h4 class="text-xs font-black text-slate-800">\${item.name} (\${item.qty.toFixed(0)} bags)</h4>
-                    <span class="block text-[8px] font-bold text-slate-400 uppercase">SKU: \${item.sku} | Location: \${item.whName}</span>
+                    <h4 class="text-xs font-black text-slate-800">${item.name} (${item.qty.toFixed(0)} bags)</h4>
+                    <span class="block text-[8px] font-bold text-slate-400 uppercase">SKU: ${item.sku} | Location: ${item.whName}</span>
                 </div>
                 <div class="text-right">
-                    <span class="block text-xs \${textClass} font-mono">\${formatDate(item.exp)}</span>
-                    <span class="block text-[8px] font-black uppercase tracking-wider text-rose-600">\${label}</span>
+                    <span class="block text-xs ${textClass} font-mono">${formatDate(item.exp)}</span>
+                    <span class="block text-[8px] font-black uppercase tracking-wider text-rose-600">${label}</span>
                 </div>
             `;
             expContainer.appendChild(itemDiv);
@@ -151,7 +151,7 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
                 });
                 
                 const zoneMax = zone.zone_id === 3 ? 5000 : 1500;
-                labels.push(`\${wh.name.split(' ')[0]} - \${zone.zone_name}`);
+                labels.push(`${wh.name.split(' ')[0]} - ${zone.zone_name}`);
                 occupancies.push(parseFloat(zoneSum.toFixed(1)));
                 limits.push(zoneMax);
             });
@@ -217,3 +217,4 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
     }
 };
 </script>
+

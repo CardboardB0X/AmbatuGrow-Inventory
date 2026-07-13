@@ -44,7 +44,7 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                     <h2 class="text-xl font-black font-outfit">Inventory Vault Node Active</h2>
                     <p class="text-xs text-emerald-100 font-semibold max-w-lg leading-relaxed">Coordination terminal for regional storage hubs. Review live stock levels, execute secure stock transfers, and audit the immutable ledger below.</p>
                 </div>
-                \${State.currentUser.role_id === 1 ? `
+                ${State.currentUser.role_id === 1 ? `
                 <div class="z-10 shrink-0">
                     <button id="btn-quick-add" class="py-2 px-4 bg-white hover:bg-slate-50 text-[#2D6A24] rounded-full text-xs font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition-all cursor-pointer">
                         <i data-lucide="plus-circle" class="w-4 h-4"></i>
@@ -66,35 +66,35 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                     </div>
                     <div>
                         <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total Vault Value</span>
-                        <span class="block text-2xl font-black text-slate-800 tracking-tight mt-1 font-outfit">\${formatPHP(totalValue)}</span>
+                        <span class="block text-2xl font-black text-slate-800 tracking-tight mt-1 font-outfit">${formatPHP(totalValue)}</span>
                     </div>
                 </div>
 
                 <!-- Low Stock warnings -->
                 <div class="card-surface p-5 flex flex-col justify-between h-36">
                     <div class="flex justify-between items-start">
-                        <div class="p-2.5 rounded-xl \${lowStockCount > 0 ? 'bg-amber-500/10 text-amber-600 border-amber-500/10' : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/10'} border">
+                        <div class="p-2.5 rounded-xl ${lowStockCount > 0 ? 'bg-amber-500/10 text-amber-600 border-amber-500/10' : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/10'} border">
                             <i data-lucide="alert-triangle" class="w-5 h-5"></i>
                         </div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase">Alerts</span>
                     </div>
                     <div>
                         <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Low Stock Warnings</span>
-                        <span class="block text-2xl font-black \${lowStockCount > 0 ? 'text-amber-600' : 'text-slate-800'} tracking-tight mt-1 font-outfit">\${lowStockCount} items</span>
+                        <span class="block text-2xl font-black ${lowStockCount > 0 ? 'text-amber-600' : 'text-slate-800'} tracking-tight mt-1 font-outfit">${lowStockCount} items</span>
                     </div>
                 </div>
 
                 <!-- Expiring batches -->
                 <div class="card-surface p-5 flex flex-col justify-between h-36">
                     <div class="flex justify-between items-start">
-                        <div class="p-2.5 rounded-xl \${expiringCount > 0 ? 'bg-rose-500/10 text-rose-600 border-rose-500/10' : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/10'} border">
+                        <div class="p-2.5 rounded-xl ${expiringCount > 0 ? 'bg-rose-500/10 text-rose-600 border-rose-500/10' : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/10'} border">
                             <i data-lucide="calendar" class="w-5 h-5"></i>
                         </div>
                         <span class="text-[9px] font-bold text-slate-400 uppercase">FEFO</span>
                     </div>
                     <div>
                         <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Expiring Batches</span>
-                        <span class="block text-2xl font-black \${expiringCount > 0 ? 'text-rose-600' : 'text-slate-800'} tracking-tight mt-1 font-outfit">\${expiringCount} batches</span>
+                        <span class="block text-2xl font-black ${expiringCount > 0 ? 'text-rose-600' : 'text-slate-800'} tracking-tight mt-1 font-outfit">${expiringCount} batches</span>
                     </div>
                 </div>
 
@@ -108,7 +108,7 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                     </div>
                     <div>
                         <span class="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Active Warehouses</span>
-                        <span class="block text-2xl font-black text-slate-800 tracking-tight mt-1 font-outfit">\${State.warehouses.length} Nodes</span>
+                        <span class="block text-2xl font-black text-slate-800 tracking-tight mt-1 font-outfit">${State.warehouses.length} Nodes</span>
                     </div>
                 </div>
             </div>
@@ -184,11 +184,11 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
         meter.className = 'space-y-1';
         meter.innerHTML = `
             <div class="flex justify-between items-center text-[10px] font-bold text-slate-700">
-                <span class="truncate max-w-[120px]">\${wh ? wh.name.split(' ')[0] : 'Unknown'} - \${zone.zone_name}</span>
-                <span class="font-mono text-slate-500">\${pct}%</span>
+                <span class="truncate max-w-[120px]">${wh ? wh.name.split(' ')[0] : 'Unknown'} - ${zone.zone_name}</span>
+                <span class="font-mono text-slate-500">${pct}%</span>
             </div>
             <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/50">
-                <div class="bg-[#2D6A24] h-full rounded-full transition-all duration-500" style="width: \${pct}%"></div>
+                <div class="bg-[#2D6A24] h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
             </div>
         `;
         metersContainer.appendChild(meter);
@@ -208,13 +208,13 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
         const row = document.createElement('tr');
         row.className = 'border-b border-slate-100/50 hover:bg-slate-50/50';
         row.innerHTML = `
-            <td class="py-2.5 font-mono text-[10px] text-slate-400">\${new Date(tx.transaction_date).toLocaleTimeString('en-US', { hour12: false })}</td>
-            <td class="py-2.5 font-bold text-slate-700 truncate max-w-[120px]">\${prod ? prod.name : 'Unknown'}</td>
-            <td class="py-2.5 text-slate-500 truncate max-w-[100px]">\${wh ? wh.name : 'Unknown'}</td>
+            <td class="py-2.5 font-mono text-[10px] text-slate-400">${new Date(tx.transaction_date).toLocaleTimeString('en-US', { hour12: false })}</td>
+            <td class="py-2.5 font-bold text-slate-700 truncate max-w-[120px]">${prod ? prod.name : 'Unknown'}</td>
+            <td class="py-2.5 text-slate-500 truncate max-w-[100px]">${wh ? wh.name : 'Unknown'}</td>
             <td class="py-2.5">
-                <span class="px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider \${badgeClass}">\${tx.transaction_type}</span>
+                <span class="px-1.5 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider ${badgeClass}">${tx.transaction_type}</span>
             </td>
-            <td class="py-2.5 text-right font-bold text-slate-700 font-mono">\${parseFloat(tx.quantity).toFixed(1)}</td>
+            <td class="py-2.5 text-right font-bold text-slate-700 font-mono">${parseFloat(tx.quantity).toFixed(1)}</td>
         `;
         txTbody.appendChild(row);
     });
@@ -282,3 +282,4 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
     });
 };
 </script>
+

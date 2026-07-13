@@ -45,27 +45,27 @@ window.renderZones = function(State, DOM) {
             <div class="space-y-2">
                 <div class="flex justify-between items-start">
                     <div>
-                        <h3 class="text-base font-black text-slate-800 font-outfit">\${wh.name}</h3>
-                        <span class="block text-[9px] font-bold text-slate-400 uppercase mt-0.5">\${addr ? `\${addr.street}, \${addr.city}` : 'No address record'}</span>
+                        <h3 class="text-base font-black text-slate-800 font-outfit">${wh.name}</h3>
+                        <span class="block text-[9px] font-bold text-slate-400 uppercase mt-0.5">${addr ? `${addr.street}, ${addr.city}` : 'No address record'}</span>
                     </div>
-                    <span class="text-[9px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full font-black uppercase tracking-wider border border-slate-200">\${parseFloat(wh.capacity_sqm).toFixed(0)} sqm</span>
+                    <span class="text-[9px] px-2 py-0.5 bg-slate-100 text-slate-500 rounded-full font-black uppercase tracking-wider border border-slate-200">${parseFloat(wh.capacity_sqm).toFixed(0)} sqm</span>
                 </div>
                 
                 <div class="grid grid-cols-2 gap-4 pt-3 border-t border-slate-100">
                     <div>
                         <span class="block text-[8px] font-bold text-slate-400 uppercase tracking-widest">Total Stored Qty</span>
-                        <span class="block text-base font-black text-slate-700 mt-0.5 font-mono">\${totalQty.toFixed(1)} units</span>
+                        <span class="block text-base font-black text-slate-700 mt-0.5 font-mono">${totalQty.toFixed(1)} units</span>
                     </div>
                     <div>
                         <span class="block text-[8px] font-bold text-slate-400 uppercase tracking-widest">Unique SKUs</span>
-                        <span class="block text-base font-black text-slate-700 mt-0.5 font-mono">\${uniqueSKUs} Batches</span>
+                        <span class="block text-base font-black text-slate-700 mt-0.5 font-mono">${uniqueSKUs} Batches</span>
                     </div>
                 </div>
             </div>
 
             <div class="space-y-3 pt-3">
                 <span class="block text-[9px] font-black text-slate-400 uppercase tracking-widest">Allocated Zones</span>
-                <div class="space-y-2.5" id="zones-list-\${wh.warehouse_id}">
+                <div class="space-y-2.5" id="zones-list-${wh.warehouse_id}">
                     <!-- Zones injected dynamically -->
                 </div>
             </div>
@@ -73,7 +73,7 @@ window.renderZones = function(State, DOM) {
         whGrid.appendChild(card);
 
         // Inject zone occupancy subbars
-        const zonesList = document.getElementById(`zones-list-\${wh.warehouse_id}`);
+        const zonesList = document.getElementById(`zones-list-${wh.warehouse_id}`);
         
         whZones.forEach(zone => {
             let zoneSum = 0;
@@ -90,13 +90,13 @@ window.renderZones = function(State, DOM) {
             zoneItem.className = 'p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200/50 rounded-2xl space-y-1.5 cursor-pointer transition-all';
             zoneItem.innerHTML = `
                 <div class="flex justify-between items-center text-[10px] font-bold text-slate-700">
-                    <span class="font-bold text-slate-800">\${zone.zone_name}</span>
-                    <span class="font-mono">\${zoneSum.toFixed(1)} / \${zoneMax} (\${pct}%)</span>
+                    <span class="font-bold text-slate-800">${zone.zone_name}</span>
+                    <span class="font-mono">${zoneSum.toFixed(1)} / ${zoneMax} (${pct}%)</span>
                 </div>
                 <div class="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                    <div class="bg-[#2D6A24] h-full rounded-full transition-all duration-300" style="width: \${pct}%"></div>
+                    <div class="bg-[#2D6A24] h-full rounded-full transition-all duration-300" style="width: ${pct}%"></div>
                 </div>
-                <span class="block text-[8px] font-bold text-slate-400 uppercase">Category: \${zone.category}</span>
+                <span class="block text-[8px] font-bold text-slate-400 uppercase">Category: ${zone.category}</span>
             `;
             zoneItem.addEventListener('click', () => {
                 State.selectedZoneFilter = zone.zone_name;
@@ -109,3 +109,4 @@ window.renderZones = function(State, DOM) {
     });
 };
 </script>
+
