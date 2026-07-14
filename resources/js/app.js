@@ -1457,6 +1457,54 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-settings').classList.remove('hidden');
     });
 
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) {
+        btnLogout.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            // Reset auth state
+            State.isAuthenticated = false;
+            State.currentUser = null;
+
+            // Clear login form inputs
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+
+            // Hide main interface, show login gateway
+            DOM.erpShell.classList.add('hidden');
+            DOM.loginGateway.classList.remove('hidden', 'animate-scale-out');
+
+            // Reset login loader values just in case
+            DOM.loginLoader.classList.add('hidden');
+            const loaderProgress = document.getElementById('load-progress-bar');
+            const loaderPercent = document.getElementById('load-status-percent');
+            const loaderTitle = document.getElementById('load-status-title');
+            if (loaderProgress) loaderProgress.style.width = '0%';
+            if (loaderPercent) loaderPercent.textContent = '0%';
+            if (loaderTitle) loaderTitle.textContent = 'ACCESS_REQUEST';
+
+            // Reset satellite nodes status
+            document.querySelectorAll('.sat-node').forEach(node => {
+                node.className = 'sat-node absolute w-8 h-8 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center transition-all duration-300';
+                const icon = node.querySelector('i');
+                if (icon) {
+                    const iconName = node.id === 'node-sat-1' ? 'database' :
+                                     node.id === 'node-sat-2' ? 'key-round' :
+                                     node.id === 'node-sat-3' ? 'network' : 'server';
+                    icon.className = `w-4 h-4 text-slate-500`;
+                    icon.setAttribute('data-lucide', iconName);
+                }
+            });
+            document.querySelectorAll('line[id^="line-sat-"]').forEach(line => {
+                line.setAttribute('stroke', 'rgba(148, 163, 184, 0.15)');
+            });
+            lucide.createIcons();
+
+            showToast('Logged out of terminal session.', 'success');
+            addConsoleLog('[Security Log] Current employee session closed. Gateway locked.', 'warning');
+        });
+    }
+
     const btnPHP = document.getElementById('btn-currency-php');
     const btnUSD = document.getElementById('btn-currency-usd');
 
