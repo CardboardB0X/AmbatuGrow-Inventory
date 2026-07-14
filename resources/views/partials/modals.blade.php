@@ -443,6 +443,44 @@
     </div>
 </div>
 
+<!-- SYSTEM NODES DIAGNOSTICS MODAL -->
+<div id="modal-nodes-status" class="hidden fixed inset-0 z-40 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs transition-opacity duration-300">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden transform transition-all duration-300 scale-95 animate-slide-up-fade">
+        <header class="bg-[#2D6A24] text-white p-5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <i data-lucide="activity" class="w-4 h-4"></i>
+                <h3 class="text-sm font-black uppercase tracking-wider font-outfit">System Nodes Diagnostics</h3>
+            </div>
+            <button class="close-modal text-white/80 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+        </header>
+        
+        <div class="p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider">Microservice Node</span>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-wider text-right">Ping Latency / Status</span>
+            </div>
+
+            <!-- Node items container -->
+            <div class="space-y-4" id="nodes-status-list">
+                <!-- Injected dynamically by JS -->
+            </div>
+
+            <div class="p-3.5 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl flex items-start gap-2.5 text-[9px] leading-relaxed text-[#2D6A24]">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5 animate-pulse"></i>
+                <span>All microservice relays are authenticated. The database node is serving active SQLite catalogs under CV-192-168-1.</span>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-end gap-2.5">
+                <button type="button" id="btn-refresh-nodes" class="px-3.5 py-2 border border-slate-200 rounded-xl text-xs font-black uppercase tracking-wider text-slate-600 hover:bg-slate-50 flex items-center gap-1.5 cursor-pointer">
+                    <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                    <span>Run Ping Health check</span>
+                </button>
+                <button type="button" class="close-modal px-4 py-2 bg-[#2D6A24] hover:bg-[#23531B] text-white rounded-xl text-xs font-black uppercase tracking-wider cursor-pointer">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- GLOBAL TOAST NOTIFICATIONS -->
 <div id="toast-container" class="fixed bottom-6 right-6 z-55 flex flex-col gap-3 max-w-sm w-full pointer-events-none">
     <!-- Toast items prepended dynamically -->

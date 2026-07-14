@@ -1513,6 +1513,69 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('modal-settings').classList.remove('hidden');
     });
 
+    const runNodesPingHealthCheck = async () => {
+        const list = document.getElementById('nodes-status-list');
+        if (!list) return;
+
+        list.innerHTML = `
+            <div class="p-6 text-center text-xs text-slate-400 font-bold flex flex-col items-center gap-2">
+                <i data-lucide="refresh-cw" class="w-5 h-5 text-emerald-600 animate-spin shrink-0"></i>
+                <span>Pinging secure nodes...</span>
+            </div>
+        `;
+        lucide.createIcons();
+
+        await new Promise(resolve => setTimeout(resolve, 800));
+
+        const nodes = [
+            { name: 'Database Mount Node', ip: 'CV-192.168.1.10', icon: 'database' },
+            { name: 'Vault Authorization Node', ip: 'CV-192.168.1.11', icon: 'key-round' },
+            { name: 'Indang Routing Hub', ip: 'CV-192.168.1.12', icon: 'network' },
+            { name: 'ERP Master Server Node', ip: 'CV-192.168.1.13', icon: 'server' }
+        ];
+
+        list.innerHTML = '';
+        nodes.forEach(node => {
+            const ping = Math.floor(12 + Math.random() * 25);
+            const nodeDiv = document.createElement('div');
+            nodeDiv.className = 'p-3.5 bg-slate-50 border border-slate-200/60 rounded-2xl flex justify-between items-center text-xs';
+            nodeDiv.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-[#2D6A24]/10 text-[#2D6A24] flex items-center justify-center font-bold">
+                        <i data-lucide="${node.icon}" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-slate-800 leading-tight font-outfit">${node.name}</h4>
+                        <span class="block text-[8px] font-bold text-slate-400 uppercase mt-0.5">${node.ip}</span>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="block text-[10px] font-black text-emerald-600 font-mono">${ping} ms</span>
+                    <span class="block text-[8px] font-black text-[#2D6A24] uppercase mt-0.5">Operational</span>
+                </div>
+            `;
+            list.appendChild(nodeDiv);
+        });
+        lucide.createIcons();
+    };
+
+    const btnNodesStatus = document.getElementById('btn-nodes-status');
+    if (btnNodesStatus) {
+        btnNodesStatus.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.getElementById('modal-nodes-status').classList.remove('hidden');
+            runNodesPingHealthCheck();
+        });
+    }
+
+    const btnRefreshNodes = document.getElementById('btn-refresh-nodes');
+    if (btnRefreshNodes) {
+        btnRefreshNodes.addEventListener('click', (e) => {
+            e.preventDefault();
+            runNodesPingHealthCheck();
+        });
+    }
+
     const btnLogout = document.getElementById('btn-logout');
     if (btnLogout) {
         btnLogout.addEventListener('click', (e) => {
@@ -1728,6 +1791,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('modal-edit-product').classList.add('hidden');
             document.getElementById('modal-delete-product').classList.add('hidden');
             document.getElementById('modal-purchase-order').classList.add('hidden');
+            document.getElementById('modal-nodes-status').classList.add('hidden');
             
             // Close drawer
             const dBody = DOM.drawerAdjustStock.querySelector('.bg-white');

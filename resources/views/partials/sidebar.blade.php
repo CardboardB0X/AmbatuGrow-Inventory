@@ -47,7 +47,7 @@
 
         <!-- Bottom User/Diagnostic triggers -->
         <div class="flex flex-col items-center gap-4 w-full">
-            <button class="btn-locked-dept w-9 h-9 rounded-xl bg-slate-900/40 text-slate-500 hover:text-slate-400 flex items-center justify-center relative group cursor-pointer border border-slate-800/20" data-dept="Nodes Status" title="System Nodes Status">
+            <button id="btn-nodes-status" class="w-9 h-9 rounded-xl bg-slate-900/40 text-emerald-400 hover:text-white hover:bg-[#2D6A24] flex items-center justify-center relative group cursor-pointer border border-[#2D6A24]/20 transition-all" title="System Nodes Status">
                 <i data-lucide="activity" class="w-4 h-4"></i>
                 <span class="absolute left-12 bg-slate-900 text-white text-[8px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-md hidden group-hover:block z-50 whitespace-nowrap">Nodes Status</span>
             </button>
