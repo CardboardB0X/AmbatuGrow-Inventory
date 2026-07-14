@@ -457,7 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const sortedTxs = [...State.stock_transactions]
                 .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                .slice(0, 3);
+                .slice(0, 10);
                 
             const getRelativeTime = (timestamp) => {
                 if (!timestamp) return 'Just now';
