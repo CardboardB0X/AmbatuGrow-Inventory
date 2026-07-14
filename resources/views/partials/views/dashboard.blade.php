@@ -161,6 +161,46 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                     </div>
                 </div>
             </div>
+
+            <!-- Full-width Section: Agricultural Planting & Supply Chain Calendar -->
+            <div class="card-surface p-5 space-y-4">
+                <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
+                    <div class="flex items-center gap-2 text-slate-800">
+                        <i data-lucide="calendar-days" class="w-4 h-4 text-[#2D6A24]"></i>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-slate-600 font-outfit">Agricultural Planting & Supply Chain Calendar</span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">Live Cavite Cycle</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <!-- Season details -->
+                    <div class="md:col-span-4 space-y-3 bg-[#e6f4ea]/40 border border-emerald-200/40 rounded-3xl p-5 select-none">
+                        <div class="flex items-center gap-2">
+                            <span id="calendar-season-icon" class="text-xl">🌾</span>
+                            <div>
+                                <h4 class="text-xs font-black text-slate-800 font-outfit" id="calendar-season-title">Rice Wet Planting Season</h4>
+                                <span class="text-[9px] font-bold text-[#2D6A24] font-mono" id="calendar-season-dates">July - September</span>
+                            </div>
+                        </div>
+                        <p class="text-[10px] text-slate-500 font-semibold leading-relaxed" id="calendar-season-desc">Main planting cycle for high-yield grains. Ensure high stock availability of organic fertilizers and crop protection tools at Silang Hub.</p>
+                        <div class="pt-2 border-t border-slate-200/50 flex justify-between items-center text-[9px] font-bold text-slate-400">
+                            <span>Storage Advice:</span>
+                            <span class="text-emerald-700" id="calendar-storage-advice">Keep seeds at < 70% humidity</span>
+                        </div>
+                    </div>
+
+                    <!-- Timeline display -->
+                    <div class="md:col-span-8 overflow-x-auto select-none">
+                        <div class="min-w-[600px] flex items-center justify-between relative py-6 px-4" id="calendar-timeline-nodes">
+                            <!-- Horizontal Timeline Line -->
+                            <div class="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 rounded-full z-0"></div>
+                            <div class="absolute left-6 top-1/2 -translate-y-1/2 h-1 bg-[#2D6A24] rounded-full z-0 transition-all duration-500" id="calendar-progress-bar" style="width: 58%;"></div>
+
+                            <!-- Timeline Months nodes injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     `;
 
@@ -266,6 +306,91 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                     }
                 }
             }
+        });
+    }
+
+    // Render Agricultural Calendar
+    const now = new Date();
+    const currentMonth = now.getMonth(); // 0-11
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    let seasonTitle = 'Rice Wet Planting Season';
+    let seasonDates = 'July - September';
+    let seasonDesc = 'Main planting cycle for high-yield grains. Ensure high stock availability of organic fertilizers and crop protection tools at Silang Hub.';
+    let storageAdvice = 'Keep seeds at < 70% humidity';
+    let seasonIcon = '🌾';
+    
+    if (currentMonth >= 0 && currentMonth <= 2) {
+        seasonTitle = 'Dry Crops & Grains Season';
+        seasonDates = 'January - March';
+        seasonDesc = 'Optimized for leafy greens and vegetables. Grains demand is moderate. Relocate surplus organic fertilizers to Indang Hub.';
+        storageAdvice = 'Keep seeds cool (15-20°C)';
+        seasonIcon = '🥬';
+    } else if (currentMonth >= 3 && currentMonth <= 5) {
+        seasonTitle = 'Nutrient Preparation Cycle';
+        seasonDates = 'April - June';
+        seasonDesc = 'Focus on soil enrichment and pre-planting soil conditioning. High demand for liquid nutrients and organic fertilizers.';
+        storageAdvice = 'Seal liquid feeds tightly';
+        seasonIcon = '🧪';
+    } else if (currentMonth >= 6 && currentMonth <= 8) {
+        seasonTitle = 'Rice Wet Planting Season';
+        seasonDates = 'July - September';
+        seasonDesc = 'Main planting cycle for high-yield grains. Ensure high stock availability of organic fertilizers and crop protection tools at Silang Hub.';
+        storageAdvice = 'Keep seeds at < 70% humidity';
+        seasonIcon = '🌾';
+    } else {
+        seasonTitle = 'Harvest & Consolidation Period';
+        seasonDates = 'October - December';
+        seasonDesc = 'Storage consolidation of newly harvested grains. Peak demand for heavy-duty tools and storage pallets.';
+        storageAdvice = 'Audit ventilation blowers';
+        seasonIcon = '🚜';
+    }
+
+    const tTitle = document.getElementById('calendar-season-title');
+    const tDates = document.getElementById('calendar-season-dates');
+    const tDesc = document.getElementById('calendar-season-desc');
+    const tAdvice = document.getElementById('calendar-storage-advice');
+    const tIcon = document.getElementById('calendar-season-icon');
+
+    if (tTitle) tTitle.textContent = seasonTitle;
+    if (tDates) tDates.textContent = seasonDates;
+    if (tDesc) tDesc.textContent = seasonDesc;
+    if (tAdvice) tAdvice.textContent = storageAdvice;
+    if (tIcon) tIcon.textContent = seasonIcon;
+
+    const timelineContainer = document.getElementById('calendar-timeline-nodes');
+    if (timelineContainer) {
+        const progressLine = timelineContainer.querySelector('.bg-slate-200');
+        const progressBar = timelineContainer.querySelector('#calendar-progress-bar');
+        
+        timelineContainer.innerHTML = '';
+        if (progressLine) timelineContainer.appendChild(progressLine);
+        if (progressBar) {
+            timelineContainer.appendChild(progressBar);
+            const progressPct = Math.round((currentMonth / 11) * 100);
+            progressBar.style.width = `${progressPct}%`;
+        }
+
+        months.forEach((m, idx) => {
+            const node = document.createElement('div');
+            node.className = 'flex flex-col items-center relative z-10';
+            
+            let circleClass = 'w-6 h-6 rounded-full bg-white border border-slate-200 text-[9px] font-bold text-slate-400 flex items-center justify-center';
+            let labelClass = 'text-[9px] font-bold text-slate-400 mt-1';
+            
+            if (idx === currentMonth) {
+                circleClass = 'w-7 h-7 rounded-full bg-[#2D6A24] border border-[#2D6A24] text-[10px] font-black text-white flex items-center justify-center shadow-[0_0_10px_rgba(45,106,36,0.3)] animate-pulse';
+                labelClass = 'text-[10px] font-black text-[#2D6A24] mt-1';
+            } else if (idx < currentMonth) {
+                circleClass = 'w-6 h-6 rounded-full bg-emerald-50 border border-[#2D6A24] text-[9px] font-bold text-[#2D6A24] flex items-center justify-center';
+                labelClass = 'text-[9px] font-bold text-slate-500 mt-1';
+            }
+            
+            node.innerHTML = `
+                <div class="${circleClass}">${idx + 1}</div>
+                <span class="${labelClass}">${m}</span>
+            `;
+            timelineContainer.appendChild(node);
         });
     }
 
