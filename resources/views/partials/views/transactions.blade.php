@@ -24,7 +24,7 @@ window.renderLedger = function(State, DOM, showToast, addConsoleLog) {
 
             <!-- Ledger Audit Logs table -->
             <div class="card-surface p-5">
-                <div class="overflow-x-auto max-h-[500px] overflow-y-auto pr-1">
+                <div class="overflow-x-auto pr-1">
                     <table class="w-full text-left text-xs">
                         <thead>
                             <tr class="border-b border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest sticky top-0 bg-white z-10">

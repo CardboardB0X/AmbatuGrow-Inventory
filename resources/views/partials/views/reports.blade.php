@@ -80,7 +80,7 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
                             <span class="text-[10px] font-black uppercase tracking-wider text-slate-700">Low Stock Trigger Reports</span>
                             <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>
                         </div>
-                        <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1 mt-3" id="reports-low-stock-list">
+                        <div class="space-y-3 pr-1 mt-3" id="reports-low-stock-list">
                             <!-- Injected -->
                         </div>
                     </div>
@@ -97,7 +97,7 @@ window.renderReports = function(State, DOM, formatDate, openPurchaseOrderModal, 
                             <span class="text-[10px] font-black uppercase tracking-wider text-slate-700">FEFO Expiration Timeline</span>
                             <i data-lucide="calendar" class="w-4 h-4 text-rose-500"></i>
                         </div>
-                        <div class="space-y-3 max-h-[320px] overflow-y-auto pr-1 mt-3" id="reports-expiration-list">
+                        <div class="space-y-3 pr-1 mt-3" id="reports-expiration-list">
                             <!-- Injected -->
                         </div>
                     </div>
