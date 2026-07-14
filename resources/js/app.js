@@ -533,6 +533,62 @@ document.addEventListener('DOMContentLoaded', () => {
                 logsList.appendChild(logItem);
             });
         }
+
+        // 4. Climate Storage Health Widget
+        const climateWidget = document.getElementById('sidebar-widget-climate-health');
+        if (climateWidget) {
+            const now = new Date();
+            const hour = now.getHours();
+            
+            let temp = 27.5;
+            let humidity = 78;
+            let status = 'Optimal';
+            let statusClass = 'text-emerald-700 bg-emerald-50/50 border-emerald-200';
+            let alertHTML = '';
+
+            if (hour >= 8 && hour <= 16) {
+                temp = Math.round(30 + Math.sin(hour) * 2);
+                humidity = Math.round(68 - Math.sin(hour) * 4);
+            } else {
+                temp = Math.round(25 + Math.cos(hour) * 1.5);
+                humidity = Math.round(82 + Math.cos(hour) * 3);
+            }
+
+            if (humidity > 80) {
+                status = 'Warning: High Humidity';
+                statusClass = 'text-amber-700 bg-amber-50/50 border-amber-200 animate-pulse';
+                alertHTML = `
+                    <div class="mt-2.5 p-2.5 bg-amber-500/5 border border-amber-500/20 rounded-2xl text-[10px] text-amber-800 font-bold flex gap-1.5 items-start leading-normal">
+                        <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-amber-600 shrink-0 mt-0.5 animate-bounce"></i>
+                        <span>High moisture threat in Indang Zone A (Seeds Store). Activate ventilation blowers immediately.</span>
+                    </div>
+                `;
+            }
+
+            climateWidget.innerHTML = `
+                <div class="flex items-center gap-2 text-slate-800 shrink-0 pt-2 border-t border-slate-100">
+                    <i data-lucide="cloud-sun" class="w-4 h-4 text-[#2D6A24] shrink-0"></i>
+                    <h4 class="font-extrabold text-sm font-outfit">Storage Climate Monitor</h4>
+                </div>
+                <div class="p-4 bg-slate-50 border border-slate-200/60 rounded-3xl space-y-3 shadow-2xs select-none">
+                    <div class="flex justify-between items-center text-xs">
+                        <div class="space-y-0.5">
+                            <span class="block text-[8px] font-black text-slate-400 uppercase tracking-wider">Cavite Indang Node</span>
+                            <span class="block text-sm font-black text-slate-800 font-outfit">${temp}°C</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="block text-[8px] font-black text-slate-400 uppercase tracking-wider">Storage Humidity</span>
+                            <span class="block text-sm font-black text-slate-700 font-mono">${humidity}% RH</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between py-1.5 px-3 rounded-xl border text-[9px] font-bold ${statusClass}">
+                        <span>System Status: ${status}</span>
+                        <i data-lucide="${humidity > 80 ? 'wind' : 'check-circle'}" class="w-3.5 h-3.5"></i>
+                    </div>
+                    ${alertHTML}
+                </div>
+            `;
+        }
         
         lucide.createIcons();
     };

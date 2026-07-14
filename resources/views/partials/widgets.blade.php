@@ -31,4 +31,9 @@
         </div>
     </div>
 
+    <!-- Widget 4: Weather & Climate Storage Health -->
+    <div id="sidebar-widget-climate-health" class="space-y-4 shrink-0">
+        <!-- Injected dynamically -->
+    </div>
+
 </aside>
