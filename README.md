@@ -66,12 +66,20 @@ php artisan key:generate
 
 ### 6. Set Up the Database (Migrate & Seed)
 Create the database file and load the sandbox seed data (roles, users, warehouses, seed inventory):
+
+**On Windows (Command Prompt / PowerShell):**
 ```bash
-# Create SQLite file if it doesn't exist
 type nul > database/database.sqlite
-# Run migrations and seed data
 php artisan migrate:fresh --seed
 ```
+
+**On macOS / Linux:**
+```bash
+touch database/database.sqlite
+chmod -R 775 database/
+php artisan migrate:fresh --seed
+```
+
 
 ### 7. Compile Frontend Assets
 Build the production JS and CSS bundles using Vite:
