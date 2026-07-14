@@ -116,7 +116,7 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
             <!-- Split section: Zone Occupancy & Recent movements -->
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
                 <!-- Stock Value by Category Chart -->
-                <div class="card-surface p-5 lg:col-span-1 flex flex-col justify-between space-y-4">
+                <div class="card-surface p-5 lg:col-span-1 flex flex-col space-y-4">
                     <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-600">Value by Category</span>
                         <i data-lucide="pie-chart" class="w-4 h-4 text-slate-400"></i>
@@ -127,7 +127,7 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                 </div>
 
                 <!-- Zone Occupancy Meter -->
-                <div class="card-surface p-5 lg:col-span-1 flex flex-col justify-between space-y-4">
+                <div class="card-surface p-5 lg:col-span-1 flex flex-col space-y-4">
                     <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-600">Zone Occupancy</span>
                         <i data-lucide="activity" class="w-4 h-4 text-slate-400"></i>
@@ -138,7 +138,7 @@ window.renderDashboard = function(State, DOM, formatPHP, lucide, openNewProductM
                 </div>
 
                 <!-- Recent movements logs list -->
-                <div class="card-surface p-5 lg:col-span-2 flex flex-col justify-between space-y-4">
+                <div class="card-surface p-5 lg:col-span-2 flex flex-col space-y-4">
                     <div class="border-b border-slate-100 pb-3 flex justify-between items-center">
                         <span class="text-[10px] font-black uppercase tracking-wider text-slate-600">Recent Movements Ledger</span>
                         <button id="btn-dashboard-to-ledger" class="text-[9px] font-black uppercase text-[#2D6A24] hover:text-[#23531B] cursor-pointer">View Entire Ledger</button>
