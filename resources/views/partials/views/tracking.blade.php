@@ -96,7 +96,7 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
             <!-- Filter and Top Actions Header (Screenshot Match) -->
             <div class="bg-white border border-slate-200 p-5 rounded-3xl flex items-center justify-between gap-4 shrink-0 shadow-2xs">
                 <!-- Left Side: Add Button -->
-                ${State.currentUser.role_id === 1 ? `
+                ${(State.currentUser.role_id === 1 || State.currentUser.role_id === 2) ? `
                 <button id="btn-add-product" class="flex items-center gap-1.5 px-4 py-2.5 bg-[#2D6A24] hover:bg-[#23531B] text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer border-none font-outfit">
                     <i data-lucide="plus" class="w-3.5 h-3.5"></i>
                     <span>Add New Inventory Item</span>
@@ -128,8 +128,10 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
             <div class="bg-emerald-950 text-white rounded-2xl px-5 py-3 flex items-center justify-between text-xs shadow-md border border-emerald-900 animate-slide-up-fade shrink-0">
                 <span class="font-bold font-outfit">${State.selectedSkus.length} items selected</span>
                 <div class="flex items-center gap-3">
+                    ${(State.currentUser.role_id === 1 || State.currentUser.role_id === 2) ? `
                     <button id="btn-bulk-active" class="px-3 py-1.5 bg-emerald-800 hover:bg-emerald-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Active</button>
                     <button id="btn-bulk-obsolete" class="px-3 py-1.5 bg-amber-800 hover:bg-amber-700 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Set Obsolete</button>
+                    ` : ''}
                     ${State.currentUser.role_id === 1 ? `
                     <button id="btn-bulk-delete" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-lg text-[9px] uppercase tracking-wider cursor-pointer transition-all border-none">Delete</button>
                     ` : ''}
@@ -243,13 +245,17 @@ window.renderTracking = function(State, DOM, formatPHP, lucide, openNewProductMo
                 <td class="p-4 text-center">${badgeHTML}</td>
                 <td class="p-4 text-center font-bold text-[11px] select-none whitespace-nowrap">
                     <div class="flex items-center justify-center gap-3">
-                        <button data-sku="${item.sku}" class="btn-action-edit text-slate-500 hover:text-slate-800 hover:underline cursor-pointer bg-transparent border-none">Edit</button>
-                        ${item.status === 'Active' ? `
-                        <button data-sku="${item.sku}" class="btn-action-archive text-amber-700 hover:text-amber-900 hover:underline cursor-pointer bg-transparent border-none">Archive</button>
+                        ${(State.currentUser.role_id === 1 || State.currentUser.role_id === 2) ? `
+                            <button data-sku="${item.sku}" class="btn-action-edit text-slate-500 hover:text-slate-800 hover:underline cursor-pointer bg-transparent border-none">Edit</button>
+                            ${item.status === 'Active' ? `
+                            <button data-sku="${item.sku}" class="btn-action-archive text-amber-700 hover:text-amber-900 hover:underline cursor-pointer bg-transparent border-none">Archive</button>
+                            ` : `
+                            ${State.currentUser.role_id === 1 ? `
+                            <button data-sku="${item.sku}" class="btn-action-delete text-red-600 hover:text-red-800 hover:underline cursor-pointer bg-transparent border-none">Delete</button>
+                            ` : `<span class="text-slate-300">Locked</span>`}
+                            `}
                         ` : `
-                        ${State.currentUser.role_id === 1 ? `
-                        <button data-sku="${item.sku}" class="btn-action-delete text-red-600 hover:text-red-800 hover:underline cursor-pointer bg-transparent border-none">Delete</button>
-                        ` : `<span class="text-slate-300">Locked</span>`}
+                            <span class="text-slate-400 italic">Read-Only</span>
                         `}
                     </div>
                 </td>

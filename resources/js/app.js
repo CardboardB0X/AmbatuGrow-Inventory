@@ -26,11 +26,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Master Tables
         roles: [
             { role_id: 1, role_name: 'System Administrator', description: 'Full access to all systems' },
-            { role_id: 2, role_name: 'Inventory Officer', description: 'Access to stock tracking and movements' }
+            { role_id: 2, role_name: 'Inventory Officer', description: 'Access to stock tracking and movements' },
+            { role_id: 3, role_name: 'Procurement Officer', description: 'Access to purchase orders and suppliers' },
+            { role_id: 4, role_name: 'Logistics Coordinator', description: 'Access to shipping manifests and zones' },
+            { role_id: 5, role_name: 'Sales Manager', description: 'Access to sales orders and customers' },
+            { role_id: 6, role_name: 'Finance Accountant', description: 'Access to pricing audit and ledger reporting' }
         ],
         users: [
             { user_id: 1, username: 'admin', password: 'admin123', email: 'admin@ambatugrow.com', role_id: 1, name: 'System Admin' },
-            { user_id: 2, username: 'officer', password: 'officer123', email: 'officer@ambatugrow.com', role_id: 2, name: 'Inventory Officer' }
+            { user_id: 2, username: 'officer', password: 'officer123', email: 'officer@ambatugrow.com', role_id: 2, name: 'Inventory Officer' },
+            { user_id: 3, username: 'procurement', password: 'procure123', email: 'procurement@ambatugrow.com', role_id: 3, name: 'Procurement Officer' },
+            { user_id: 4, username: 'logistics', password: 'logistics123', email: 'logistics@ambatugrow.com', role_id: 4, name: 'Logistics Coordinator' },
+            { user_id: 5, username: 'sales', password: 'sales123', email: 'sales@ambatugrow.com', role_id: 5, name: 'Sales Manager' },
+            { user_id: 6, username: 'finance', password: 'finance123', email: 'finance@ambatugrow.com', role_id: 6, name: 'Finance Accountant' }
         ],
         addresses: [
             { address_id: 1, street: 'CvSU Campus', city: 'Indang', province: 'Cavite', zipcode: '4122' },
@@ -324,38 +332,61 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 
                 // Bind trigger
-                document.getElementById('sidebar-btn-generate-requisition').addEventListener('click', () => {
-                    let reqCount = 0;
+                document.getElementById('sidebar-btn-generate-requisition').addEventListener('click', async () => {
+                    const lowStockItems = [];
                     State.inventory_locations.forEach(loc => {
                         const prod = State.products.find(p => p.product_id === loc.product_id);
                         if (prod && loc.quantity <= prod.min_quantity_threshold && prod.status === 'Active') {
                             const deficit = prod.max_quantity_threshold - loc.quantity;
                             if (deficit > 0) {
-                                loc.quantity = prod.max_quantity_threshold;
-                                
-                                // Log Transaction
-                                const newTxId = State.stock_transactions.length + 1;
-                                State.stock_transactions.push({
-                                    transaction_id: newTxId,
-                                    product_id: prod.product_id,
-                                    warehouse_id: loc.warehouse_id,
-                                    zone_id: loc.zone_id,
-                                    type: 'IN',
-                                    quantity: deficit,
-                                    timestamp: new Date().toISOString(),
-                                    operator: 'System Scheduler',
-                                    notes: `Automatic reorder requisition safety threshold replenishment.`
+                                lowStockItems.push({
+                                    inventory_id: loc.inventory_id,
+                                    deficit: deficit,
+                                    sku: prod.sku
                                 });
-                                
-                                addConsoleLog(`[Reorder SUCCESS] Replenished SKU ${prod.sku} with +${deficit.toFixed(0)} units to max threshold.`, 'success');
-                                reqCount++;
                             }
                         }
                     });
-                    
-                    if (reqCount > 0) {
-                        showToast(`Generated requisition. Replenished ${reqCount} low stock items.`, 'success');
+
+                    if (lowStockItems.length === 0) return;
+
+                    const btn = document.getElementById('sidebar-btn-generate-requisition');
+                    btn.disabled = true;
+                    btn.textContent = 'REORDERING...';
+
+                    try {
+                        const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                        
+                        await Promise.all(lowStockItems.map(item => 
+                            fetch('/api/adjustments', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': token
+                                },
+                                body: JSON.stringify({
+                                    inventory_id: item.inventory_id,
+                                    action: 'in',
+                                    quantity: item.deficit
+                                })
+                            }).then(res => {
+                                if (!res.ok) throw new Error(`Failed to reorder SKU ${item.sku}`);
+                                return res.json();
+                            })
+                        ));
+
+                        await refreshStateFromServer();
+                        showToast(`Generated requisition. Replenished ${lowStockItems.length} low stock items.`, 'success');
                         playAlertSound('success');
+                        
+                        lowStockItems.forEach(item => {
+                            addConsoleLog(`[Reorder SUCCESS] Replenished SKU ${item.sku} with +${item.deficit.toFixed(0)} units to max threshold.`, 'success');
+                        });
+                    } catch (err) {
+                        showToast(err.message, 'error');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = 'Generate Requisition Order';
                         updateSidebarWidgets();
                         if (State.activeTab === 'tracking') renderTracking();
                     }
@@ -662,7 +693,9 @@ document.addEventListener('DOMContentLoaded', () => {
                             const sideUser = document.getElementById('sidebar-username');
                             const sideRole = document.getElementById('sidebar-role');
                             if (sideUser) sideUser.textContent = State.currentUser.name;
-                            if (sideRole) sideRole.textContent = State.currentUser.role_id === 1 ? 'Administrator' : 'Inventory Officer';
+                            
+                            const roleObj = State.roles.find(r => r.role_id === State.currentUser.role_id);
+                            if (sideRole) sideRole.textContent = roleObj ? roleObj.role_name : 'Staff';
                             
                             // Initialize modules layout
                             renderWorkspace();
@@ -1244,36 +1277,41 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast(`Purchase Order ${activePO.poNo} approved. Transmitting to supplier...`, 'success');
             addConsoleLog(`[PO DISPATCHED] Order ${activePO.poNo} sent. Delivery transit initiated.`, 'info');
 
-            setTimeout(() => {
-                // Execute simulated Stock-in receipt
-                const loc = State.inventory_locations.find(l => l.inventory_id === activePO.inventory_id);
-                if (loc) {
-                    loc.quantity += activePO.qty;
-                    
-                    // Log Transaction
-                    const newTxId = State.stock_transactions.length + 1;
-                    State.stock_transactions.push({
-                        transaction_id: newTxId,
-                        product_id: activePO.product_id,
-                        warehouse_id: activePO.warehouse_id,
-                        transaction_type: 'Stock-in',
-                        quantity: activePO.qty,
-                        transaction_date: new Date().toISOString(),
-                        notes: `Procurement fulfillment delivery receipt via PO ${activePO.poNo}.`
+            setTimeout(async () => {
+                try {
+                    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                    const res = await fetch('/api/adjustments', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': token
+                        },
+                        body: JSON.stringify({
+                            inventory_id: activePO.inventory_id,
+                            action: 'in',
+                            quantity: activePO.qty
+                        })
                     });
+
+                    if (!res.ok) {
+                        const errData = await res.json();
+                        throw new Error(errData.error || 'Server error occurred during PO dispatch.');
+                    }
+
+                    await refreshStateFromServer();
+                    showToast(`PO ${activePO.poNo} fulfilled! ${activePO.qty.toFixed(1)} units delivered to warehouse.`, 'success');
+                    addConsoleLog(`[Fulfillment SUCCESS] Received ${activePO.qty.toFixed(1)} units of ${activePO.sku}. Stock levels optimized.`, 'success');
+                } catch (err) {
+                    showToast(err.message, 'error');
+                } finally {
+                    // Reset button status and close modal
+                    btnDispatchPO.disabled = false;
+                    btnDispatchPO.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Approve & Dispatch PO</span>`;
+                    lucide.createIcons();
+
+                    document.getElementById('modal-purchase-order').classList.add('hidden');
+                    activePO = null;
                 }
-
-                // Reset button status and close modal
-                btnDispatchPO.disabled = false;
-                btnDispatchPO.innerHTML = `<i data-lucide="send" class="w-3.5 h-3.5"></i> <span>Approve & Dispatch PO</span>`;
-                lucide.createIcons();
-
-                document.getElementById('modal-purchase-order').classList.add('hidden');
-                renderWorkspace();
-                showToast(`PO ${activePO.poNo} fulfilled! ${activePO.qty.toFixed(1)} units delivered to warehouse.`, 'success');
-                addConsoleLog(`[Fulfillment SUCCESS] Received ${activePO.qty.toFixed(1)} units of ${activePO.sku}. Stock levels optimized.`, 'success');
-                
-                activePO = null;
             }, 3000); // 3 seconds delay
         });
     }

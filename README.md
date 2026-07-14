@@ -6,7 +6,7 @@ A high-fidelity sandbox ERP simulation portal designed to track agricultural sto
 
 ## 🚀 Technology Stack
 * **Backend:** Laravel 11.x (PHP 8.3+)
-* **Database:** MySQL (administered via phpMyAdmin)
+* **Database:** SQLite (default configured out-of-the-box in `.env`)
 * **Frontend:** Laravel Blade, Tailwind CSS, Vite, Vanilla ES6 JavaScript
 * **Icons & Charts:** Lucide Icons, Chart.js
 
@@ -92,10 +92,14 @@ Open your web browser and navigate to: **`http://127.0.0.1:8000`**
 
 To test the multi-role access controls, sign in using the credentials below:
 
-| Username | Password | Role | Features Available |
+| Username / Email | Password | Role | Features Available |
 | :--- | :--- | :--- | :--- |
-| **admin** | `admin123` | **System Administrator** | Full edit details modal, product discontinuation (cascade delete), warehouse transfers, PO generation. |
-| **officer** | `officer123` | **Inventory Officer** | Stock transactions adjustments, warehouse transfers, PO preview. *(Edit & Delete catalog controls are hidden)* |
+| **admin@ambatugrow.com** | `admin123` | **System Administrator** | Full access to all systems, settings, diagnostics, catalog updates (Add, Edit, Delete), and CSV exports. |
+| **officer@ambatugrow.com** | `officer123` | **Inventory Officer** | Stock transactions adjustments, warehouse transfers, product catalog updates (Add, Edit, Archive). *Permanent delete controls are hidden.* |
+| **procurement@ambatugrow.com** | `procure123` | **Procurement Officer** | Manages supplier links and generates/dispatches purchase orders (POs). *Product editing, delete, and CSV export buttons are locked.* |
+| **logistics@ambatugrow.com** | `logistics123` | **Logistics Coordinator** | Audits location zones and relocates stocks. *Product editing, PO generation, and CSV export buttons are locked.* |
+| **sales@ambatugrow.com** | `sales123` | **Sales Manager** | Audits stock levels and prices. *Product editing, PO generation, and CSV export buttons are locked.* |
+| **finance@ambatugrow.com** | `finance123` | **Finance Accountant** | Audits ledgers and exports transaction history ledger CSVs. *Product editing, adjustments, and PO generation buttons are locked.* |
 
 ---
 

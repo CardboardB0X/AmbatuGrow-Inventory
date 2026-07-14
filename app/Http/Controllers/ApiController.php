@@ -27,8 +27,24 @@ class ApiController extends Controller
             'roles' => Role::all(),
             'users' => User::all()->map(function($u) {
                 $arr = $u->toArray();
-                $arr['password'] = $u->username === 'admin' ? 'admin123' : 'officer123';
-                $arr['name'] = $u->username === 'admin' ? 'System Admin' : 'Inventory Officer';
+                $arr['password'] = match($u->username) {
+                    'admin' => 'admin123',
+                    'officer' => 'officer123',
+                    'procurement' => 'procure123',
+                    'logistics' => 'logistics123',
+                    'sales' => 'sales123',
+                    'finance' => 'finance123',
+                    default => 'password123'
+                };
+                $arr['name'] = match($u->username) {
+                    'admin' => 'System Admin',
+                    'officer' => 'Inventory Officer',
+                    'procurement' => 'Procurement Officer',
+                    'logistics' => 'Logistics Coordinator',
+                    'sales' => 'Sales Manager',
+                    'finance' => 'Finance Accountant',
+                    default => 'User'
+                };
                 return $arr;
             }),
             'addresses' => Address::all(),

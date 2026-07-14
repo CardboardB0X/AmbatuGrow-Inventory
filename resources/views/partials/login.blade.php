@@ -129,9 +129,16 @@
                 </button>
             </form>
 
-            <div class="p-3 bg-slate-50 border border-slate-200/60 rounded-xl text-center">
-                <span class="text-[8px] font-extrabold text-slate-400 block uppercase tracking-wider">Simulation Sandbox</span>
-                <span class="text-[9px] font-bold text-slate-500 mt-1 block leading-normal">Admin: admin@ambatugrow.com / admin123<br>Officer: officer@ambatugrow.com / officer123</span>
+            <div class="p-3 bg-slate-50 border border-slate-200/60 rounded-xl text-center max-h-[140px] overflow-y-auto">
+                <span class="text-[8px] font-extrabold text-slate-400 block uppercase tracking-wider">Simulation Sandbox Logins</span>
+                <span class="text-[9px] font-bold text-slate-500 mt-1 block leading-relaxed text-left">
+                    &bull; <strong>Admin:</strong> admin@ambatugrow.com / admin123<br>
+                    &bull; <strong>Officer:</strong> officer@ambatugrow.com / officer123<br>
+                    &bull; <strong>Procurement:</strong> procurement@ambatugrow.com / procure123<br>
+                    &bull; <strong>Logistics:</strong> logistics@ambatugrow.com / logistics123<br>
+                    &bull; <strong>Sales:</strong> sales@ambatugrow.com / sales123<br>
+                    &bull; <strong>Finance:</strong> finance@ambatugrow.com / finance123
+                </span>
             </div>
         </div>
     </section>
